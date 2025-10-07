@@ -1,0 +1,45 @@
+{
+  "solution": "Travel Helpdesk",
+  "org_size": 500,
+  "connectors": {
+    "okta": "connected",
+    "slack": "connected",
+    "confluence": "connected",
+    "concur": "missing"
+  },
+  "catalog": [
+    "new_trip",
+    "visa",
+    "change_cancel",
+    "emergency",
+    "corp_card",
+    "profile_update"
+  ],
+  "slas": {
+    "P1": {
+      "first_response_min": 5,
+      "resolve_target_min": 60
+    },
+    "standard": {
+      "first_response_min": 240,
+      "resolve_target_min": 1440
+    }
+  },
+  "policies": {
+    "class_by_level": {
+      "L8": "J",
+      "L7": "W",
+      "L6": "Y"
+    },
+    "approval_threshold_inr": 150000
+  },
+  "kb_seed_count": 10,
+  "teams": {
+    "project": "Travel Desk",
+    "roles": ["Owner", "Agent", "Viewer"]
+  },
+  "routing": {
+    "vip_group": "Execs",
+    "p1_channel": "#travel-hotline"
+  }
+}

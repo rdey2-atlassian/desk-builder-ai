@@ -1,0 +1,51 @@
+[
+  {
+    "id": "TRV-001",
+    "type": "new_trip",
+    "title": "New Trip: BLR → AMS",
+    "status": "pending_approval",
+    "priority": "standard",
+    "created": "2025-01-15T10:30:00Z",
+    "requester": "Priya Sharma",
+    "data": {
+      "origin": "Bangalore (BLR)",
+      "destination": "Amsterdam (AMS)",
+      "depart_date": "2025-02-20",
+      "return_date": "2025-02-27",
+      "purpose": "Attend DevOps Conference and meet EMEA clients",
+      "traveler_level": "L7",
+      "class": "Premium Economy",
+      "visa_needed": true
+    }
+  },
+  {
+    "id": "TRV-002",
+    "type": "emergency",
+    "title": "Emergency: Missed connection at DOH",
+    "status": "in_progress",
+    "priority": "P1",
+    "created": "2025-01-15T22:15:00Z",
+    "requester": "Rajesh Kumar",
+    "data": {
+      "location": "Doha Hamad International (DOH)",
+      "airline_pnr": "QR / ABC123",
+      "issue": "Missed connection due to incoming flight delay. Next available flight in 12 hours. Need urgent rebooking.",
+      "contact": "+974-XXXX-XXXX"
+    }
+  },
+  {
+    "id": "TRV-003",
+    "type": "visa",
+    "title": "Visa: Germany Business",
+    "status": "assigned",
+    "priority": "standard",
+    "created": "2025-01-14T14:20:00Z",
+    "requester": "Anita Desai",
+    "data": {
+      "destination_country": "Germany",
+      "visa_type": "Business",
+      "travel_dates": "March 10-20, 2025",
+      "documents_needed": ["Visa Letter", "Invitation Letter"]
+    }
+  }
+]

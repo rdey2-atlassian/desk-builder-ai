@@ -1,0 +1,52 @@
+[
+  {
+    "id": "policy_summary",
+    "title": "Atlassian Business Travel Policy (Summary)",
+    "content": "## Policy Overview\n\n- **Booking Window**: Minimum 14 days advance for domestic, 21 days for international\n- **Class of Travel**: Based on employee level and flight duration\n- **Approval Required**: Business class, budget >₹150,000, or VIP travelers\n- **Preferred Vendors**: Use approved airlines and hotel chains\n- **Expense Reports**: Submit within 7 days of trip completion"
+  },
+  {
+    "id": "class_of_travel",
+    "title": "Booking Windows & Class of Travel (by employee level)",
+    "content": "## Class of Travel Rules\n\n### By Employee Level\n- **L8 (Executive)**: Business Class for flights >3h\n- **L7 (Senior Manager)**: Premium Economy for flights >5h\n- **L6 and below**: Economy Class\n\n### Exceptions\n- Medical reasons (requires documentation)\n- Flights >12h may be upgraded one class\n- Last-minute bookings (<48h) may use available inventory"
+  },
+  {
+    "id": "preferred_vendors",
+    "title": "Preferred Airlines & Hotels (Global)",
+    "content": "## Preferred Airlines\n- **Americas**: United, Delta, Air Canada\n- **Europe**: Lufthansa, British Airways, KLM\n- **Asia-Pacific**: Singapore Airlines, ANA, Qantas\n- **India**: Air India, Vistara, IndiGo\n\n## Preferred Hotels\n- Marriott, Hilton, IHG properties\n- Local agreements in major cities"
+  },
+  {
+    "id": "visa_letter",
+    "title": "How to Request a Visa Letter",
+    "content": "## Visa Letter Process\n\n1. Submit request minimum 3 weeks before travel\n2. Provide: Destination, Travel dates, Purpose, Passport copy\n3. Travel team generates letter within 2 business days\n4. Letter includes: Company details, Trip purpose, Financial guarantee\n5. Use letter for visa application at consulate"
+  },
+  {
+    "id": "international_checklist",
+    "title": "International Trip Checklist (Devices, Roaming, Insurance)",
+    "content": "## Before You Travel\n\n### Documents\n- ✓ Passport (valid 6+ months)\n- ✓ Visa (if required)\n- ✓ Travel insurance confirmation\n- ✓ Emergency contact card\n\n### Technology\n- ✓ Enable international roaming or get local SIM\n- ✓ Download offline maps\n- ✓ Backup important files\n- ✓ Check device compliance for destination\n\n### Health & Safety\n- ✓ Required vaccinations\n- ✓ Travel insurance active\n- ✓ Emergency numbers saved"
+  },
+  {
+    "id": "emergency_help",
+    "title": "Emergency Travel Help: What We Need From You",
+    "content": "## Emergency Travel Support (24×7)\n\n### When to Use\n- Missed connections\n- Flight cancellations\n- Lost passport/documents\n- Medical emergency\n- Security concerns\n\n### Information Needed\n- Current location\n- Airline and PNR (if applicable)\n- Nature of emergency\n- Contact number\n\n### Response Time\nP1 Priority: 5 minutes initial response, 1 hour resolution target"
+  },
+  {
+    "id": "change_cancel",
+    "title": "Change/Cancel Fees – What to Expect",
+    "content": "## Change & Cancellation Policy\n\n### Within Policy\n- Changes >14 days: No fee\n- Changes 7-14 days: Airline fees apply\n- Changes <7 days: Requires manager approval + fees\n\n### Cancellations\n- >14 days: Full refund\n- 7-14 days: Partial refund (minus fees)\n- <7 days: Case-by-case review\n\n### Emergency Cancellations\nMedical or family emergency: Full refund with documentation"
+  },
+  {
+    "id": "expense_advance",
+    "title": "Expense Advance: Eligibility & SLAs",
+    "content": "## Travel Advance Requests\n\n### Eligibility\n- International trips only\n- Maximum 50% of estimated expenses\n- Minimum trip duration: 5 days\n\n### Process\n1. Submit request with trip approval\n2. Finance review (2 business days)\n3. Transfer to expense account\n4. Reconcile within 7 days of return\n\n### SLA\nApproval: 2 business days\nTransfer: 1 business day after approval"
+  },
+  {
+    "id": "travel_profile",
+    "title": "Travel Profile: Keeping Passport Details Up to Date",
+    "content": "## Travel Profile Maintenance\n\n### Required Information\n- Passport number and expiry\n- Known traveler numbers (TSA PreCheck, etc.)\n- Frequent flyer accounts\n- Seat preferences\n- Meal preferences\n- Emergency contacts\n\n### When to Update\n- Passport renewal\n- Change of emergency contact\n- New loyalty memberships\n- Twice yearly review recommended"
+  },
+  {
+    "id": "data_privacy",
+    "title": "Data Privacy: How we handle passport/visa data",
+    "content": "## Privacy & Data Protection\n\n### Data We Collect\n- Passport details (encrypted)\n- Visa information\n- Travel preferences\n- Emergency contacts\n\n### How We Protect It\n- AES-256 encryption at rest\n- TLS in transit\n- Access restricted to Travel Desk only\n- Annual security audits\n- Compliance: GDPR, SOC2\n\n### Your Rights\n- Access your data anytime\n- Request deletion (subject to legal retention)\n- Export data in standard format"
+  }
+]

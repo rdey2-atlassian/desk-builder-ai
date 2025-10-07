@@ -1,0 +1,276 @@
+[
+  {
+    "id": "new_trip",
+    "title": "Request a New Trip",
+    "description": "Book business travel within policy",
+    "priority": "standard",
+    "icon": "plane",
+    "fields": [
+      {
+        "id": "origin",
+        "label": "Origin",
+        "type": "text",
+        "required": true,
+        "placeholder": "BLR"
+      },
+      {
+        "id": "destination",
+        "label": "Destination",
+        "type": "text",
+        "required": true,
+        "placeholder": "AMS"
+      },
+      {
+        "id": "depart_date",
+        "label": "Departure Date",
+        "type": "date",
+        "required": true
+      },
+      {
+        "id": "return_date",
+        "label": "Return Date",
+        "type": "date",
+        "required": true
+      },
+      {
+        "id": "purpose",
+        "label": "Purpose",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Client meeting, conference, etc."
+      },
+      {
+        "id": "cost_center",
+        "label": "Cost Center",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "traveler_level",
+        "label": "Traveler Level",
+        "type": "select",
+        "required": true,
+        "options": ["L6", "L7", "L8"]
+      },
+      {
+        "id": "class",
+        "label": "Class of Travel",
+        "type": "select",
+        "required": true,
+        "options": ["Economy", "Premium Economy", "Business"],
+        "hint": "Policy-bounded based on level and duration"
+      },
+      {
+        "id": "visa_needed",
+        "label": "Visa Required?",
+        "type": "boolean",
+        "required": true
+      },
+      {
+        "id": "preferred_airline",
+        "label": "Preferred Airline",
+        "type": "text",
+        "required": false
+      },
+      {
+        "id": "preferred_hotel",
+        "label": "Preferred Hotel",
+        "type": "text",
+        "required": false
+      },
+      {
+        "id": "manager",
+        "label": "Manager",
+        "type": "text",
+        "required": true,
+        "hint": "Auto-populated from Okta"
+      },
+      {
+        "id": "itinerary",
+        "label": "Upload Itinerary/Quote",
+        "type": "file",
+        "required": false
+      }
+    ],
+    "routing": {
+      "default": "Travel Desk",
+      "approvals": {
+        "conditions": [
+          "class == 'Business'",
+          "budget > 150000",
+          "international && duration > 5h"
+        ],
+        "approver": "Manager"
+      }
+    },
+    "sla": "standard"
+  },
+  {
+    "id": "emergency",
+    "title": "Emergency Travel Help",
+    "description": "24×7 urgent travel support",
+    "priority": "P1",
+    "icon": "alert-circle",
+    "fields": [
+      {
+        "id": "location",
+        "label": "Current Location",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "airline_pnr",
+        "label": "Airline & PNR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "id": "issue",
+        "label": "Emergency Description",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Missed connection, lost passport, medical issue, etc."
+      },
+      {
+        "id": "contact",
+        "label": "Best Contact Number",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "routing": {
+      "default": "Travel Desk",
+      "escalation": {
+        "notify": "#travel-hotline",
+        "oncall": true
+      }
+    },
+    "sla": "P1"
+  },
+  {
+    "id": "visa",
+    "title": "Visa & Document Support",
+    "description": "Visa letters and document assistance",
+    "priority": "standard",
+    "icon": "file-text",
+    "fields": [
+      {
+        "id": "destination_country",
+        "label": "Destination Country",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "visa_type",
+        "label": "Visa Type",
+        "type": "select",
+        "required": true,
+        "options": ["Business", "Work", "Tourist"]
+      },
+      {
+        "id": "travel_dates",
+        "label": "Planned Travel Dates",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "documents_needed",
+        "label": "Documents Needed",
+        "type": "checkbox",
+        "options": ["Visa Letter", "Invitation Letter", "Financial Guarantee"]
+      }
+    ],
+    "sla": "visa"
+  },
+  {
+    "id": "change_cancel",
+    "title": "Change / Cancel Trip",
+    "description": "Modify or cancel existing bookings",
+    "priority": "standard",
+    "icon": "calendar-x",
+    "fields": [
+      {
+        "id": "booking_reference",
+        "label": "Booking Reference",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "change_type",
+        "label": "Request Type",
+        "type": "select",
+        "required": true,
+        "options": ["Change Dates", "Change Flight", "Cancel Trip"]
+      },
+      {
+        "id": "reason",
+        "label": "Reason",
+        "type": "textarea",
+        "required": true
+      }
+    ],
+    "sla": "standard"
+  },
+  {
+    "id": "corp_card",
+    "title": "Corporate Card / Expense Advance",
+    "description": "Request travel advance or card",
+    "priority": "standard",
+    "icon": "credit-card",
+    "fields": [
+      {
+        "id": "request_type",
+        "label": "Request Type",
+        "type": "select",
+        "required": true,
+        "options": ["Expense Advance", "Corporate Card"]
+      },
+      {
+        "id": "trip_reference",
+        "label": "Related Trip",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "amount",
+        "label": "Amount (INR)",
+        "type": "number",
+        "required": true
+      },
+      {
+        "id": "justification",
+        "label": "Justification",
+        "type": "textarea",
+        "required": true
+      }
+    ],
+    "sla": "standard"
+  },
+  {
+    "id": "profile_update",
+    "title": "Travel Profile Update",
+    "description": "Update passport, preferences, or emergency contacts",
+    "priority": "standard",
+    "icon": "user",
+    "fields": [
+      {
+        "id": "update_type",
+        "label": "What to Update",
+        "type": "checkbox",
+        "options": [
+          "Passport Details",
+          "Frequent Flyer Numbers",
+          "Emergency Contacts",
+          "Preferences"
+        ]
+      },
+      {
+        "id": "details",
+        "label": "Details",
+        "type": "textarea",
+        "required": true
+      }
+    ],
+    "sla": "standard"
+  }
+]
