@@ -7,9 +7,10 @@ import { Briefcase, Plane, Users, Sparkles, Upload, FileText, Image, Monitor } f
 
 interface LandingProps {
   onGenerate: (prompt: string) => void;
+  onScreenShare: () => void;
 }
 
-const Landing = ({ onGenerate }: LandingProps) => {
+const Landing = ({ onGenerate, onScreenShare }: LandingProps) => {
   const [prompt, setPrompt] = useState("");
   const [importDialogOpen, setImportDialogOpen] = useState(false);
 
@@ -129,7 +130,13 @@ const Landing = ({ onGenerate }: LandingProps) => {
                       </div>
                     </div>
                   </Card>
-                  <Card className="p-4 cursor-pointer transition-smooth hover:border-primary group">
+                  <Card 
+                    className="p-4 cursor-pointer transition-smooth hover:border-primary group"
+                    onClick={() => {
+                      setImportDialogOpen(false);
+                      onScreenShare();
+                    }}
+                  >
                     <div className="flex items-start gap-4">
                       <Monitor className="w-6 h-6 text-primary mt-1" />
                       <div>
