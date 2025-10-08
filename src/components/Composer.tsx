@@ -205,55 +205,70 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
           <div>
             {editingTab ? (
               <Card className="h-[calc(100vh-12rem)] flex flex-col">
-                <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center justify-between p-4 border-b bg-background-secondary/50">
                   <h2 className="text-lg font-semibold">Refine Your Helpdesk</h2>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleCloseEdit}
+                    className="h-8 w-8 p-0"
                   >
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
-                <Tabs value={activeRefineTab} onValueChange={setActiveRefineTab} className="flex flex-col h-full">
-                  <div className="border-b px-4">
-                    <TabsList className="grid w-full grid-cols-7 bg-transparent">
-                      <TabsTrigger value="portal">Portal</TabsTrigger>
-                      <TabsTrigger value="request-types">Requests</TabsTrigger>
-                      <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
-                      <TabsTrigger value="integrations">Integrations</TabsTrigger>
-                      <TabsTrigger value="automations">Automations</TabsTrigger>
-                      <TabsTrigger value="slas">SLAs</TabsTrigger>
-                      <TabsTrigger value="team">Team</TabsTrigger>
+                <Tabs value={activeRefineTab} onValueChange={setActiveRefineTab} className="flex flex-col flex-1">
+                  <div className="border-b bg-background">
+                    <TabsList className="w-full h-auto grid grid-cols-7 bg-transparent rounded-none p-0">
+                      <TabsTrigger value="portal" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                        Portal
+                      </TabsTrigger>
+                      <TabsTrigger value="request-types" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                        Requests
+                      </TabsTrigger>
+                      <TabsTrigger value="knowledge" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                        Knowledge
+                      </TabsTrigger>
+                      <TabsTrigger value="integrations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                        Integrations
+                      </TabsTrigger>
+                      <TabsTrigger value="automations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                        Automations
+                      </TabsTrigger>
+                      <TabsTrigger value="slas" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                        SLAs
+                      </TabsTrigger>
+                      <TabsTrigger value="team" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                        Team
+                      </TabsTrigger>
                     </TabsList>
                   </div>
 
-                  <div className="flex-1 overflow-auto p-6">
-                    <TabsContent value="portal" className="mt-0">
+                  <div className="flex-1 overflow-auto">
+                    <TabsContent value="portal" className="mt-0 h-full p-6">
                       <PortalTab />
                     </TabsContent>
 
-                    <TabsContent value="request-types" className="mt-0">
+                    <TabsContent value="request-types" className="mt-0 h-full p-6">
                       <RequestTypesTab />
                     </TabsContent>
 
-                    <TabsContent value="knowledge" className="mt-0">
+                    <TabsContent value="knowledge" className="mt-0 h-full p-6">
                       <KnowledgeTab />
                     </TabsContent>
 
-                    <TabsContent value="integrations" className="mt-0">
+                    <TabsContent value="integrations" className="mt-0 h-full p-6">
                       <IntegrationsTab />
                     </TabsContent>
 
-                    <TabsContent value="automations" className="mt-0">
+                    <TabsContent value="automations" className="mt-0 h-full p-6">
                       <AutomationsTab />
                     </TabsContent>
 
-                    <TabsContent value="slas" className="mt-0">
+                    <TabsContent value="slas" className="mt-0 h-full p-6">
                       <SLAsTab />
                     </TabsContent>
 
-                    <TabsContent value="team" className="mt-0">
+                    <TabsContent value="team" className="mt-0 h-full p-6">
                       <TeamRolesTab />
                     </TabsContent>
                   </div>
@@ -303,7 +318,7 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
             )}
           </div>
 
-          {/* Right: Chat Interface (30%) */}
+          {/* Right: Chat Interface (30%) - Always visible */}
           <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)]">
             <ChatInterface
               userPrompt={prompt}
