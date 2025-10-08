@@ -1,0 +1,75 @@
+{
+  "user_sync": {
+    "enabled": true,
+    "provider": "Okta",
+    "type": "SCIM",
+    "description": "Automatic user provisioning and deprovisioning from Okta IdP",
+    "sync_frequency": "real-time",
+    "last_sync": "2025-10-08T14:30:00Z",
+    "users_synced": 198,
+    "features": [
+      "Auto-provision new users",
+      "Auto-deprovision on termination",
+      "Update user attributes (name, email, phone)",
+      "Sync profile photos"
+    ]
+  },
+  "team_sync": {
+    "enabled": true,
+    "provider": "Okta",
+    "description": "Map Okta groups to operations teams automatically",
+    "sync_frequency": "hourly",
+    "last_sync": "2025-10-08T14:00:00Z",
+    "mappings": [
+      {
+        "okta_group": "Engineering-SRE",
+        "ops_team": "SRE On-Call",
+        "role": "responder",
+        "members": 12
+      },
+      {
+        "okta_group": "Engineering-Backend",
+        "ops_team": "Backend On-Call",
+        "role": "responder",
+        "members": 25
+      },
+      {
+        "okta_group": "Engineering-Managers",
+        "ops_team": "Escalation Team",
+        "role": "oncall_manager",
+        "members": 8
+      },
+      {
+        "okta_group": "Executive-Team",
+        "ops_team": "Executive Notifications",
+        "role": "stakeholder",
+        "members": 5
+      }
+    ],
+    "features": [
+      "Auto-add users to teams based on group membership",
+      "Remove users when they leave groups",
+      "Maintain on-call schedules automatically"
+    ]
+  },
+  "calendar_sync": {
+    "enabled": true,
+    "provider": "Google Calendar",
+    "description": "Sync on-call schedules to team calendars",
+    "features": [
+      "Create calendar events for on-call shifts",
+      "Send shift reminders 24h in advance",
+      "Update events on schedule changes"
+    ]
+  },
+  "slack_sync": {
+    "enabled": true,
+    "provider": "Slack",
+    "description": "Keep Slack user groups in sync with on-call schedules",
+    "features": [
+      "Update @oncall-primary user group",
+      "Update @oncall-secondary user group",
+      "Post schedule changes to #on-call channel"
+    ]
+  }
+}

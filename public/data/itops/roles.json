@@ -1,0 +1,51 @@
+{
+  "roles": [
+    {
+      "id": "ops_admin",
+      "name": "Operations Admin",
+      "description": "Full access to configure all ITOM settings, manage integrations, and oversee incident response",
+      "permissions": [
+        "Configure playbooks and escalations",
+        "Manage on-call schedules",
+        "Edit integrations and heartbeats",
+        "View all incidents and analytics",
+        "Manage team roles and access"
+      ]
+    },
+    {
+      "id": "oncall_manager",
+      "name": "On-call Manager",
+      "description": "Manages on-call schedules, rotations, and escalation policies",
+      "permissions": [
+        "Create and edit on-call schedules",
+        "Manage escalation policies",
+        "Override schedules temporarily",
+        "View team availability",
+        "Configure notifications"
+      ]
+    },
+    {
+      "id": "responder",
+      "name": "Responder",
+      "description": "Responds to incidents, follows playbooks, and updates incident status",
+      "permissions": [
+        "Acknowledge and resolve incidents",
+        "Execute playbook actions",
+        "Update incident status and notes",
+        "Create post-incident reviews",
+        "View assigned incidents"
+      ]
+    },
+    {
+      "id": "stakeholder",
+      "name": "Stakeholder / Viewer",
+      "description": "Read-only access to view incidents and reports",
+      "permissions": [
+        "View incident dashboard",
+        "Read incident details",
+        "Access reports and analytics",
+        "Subscribe to status updates"
+      ]
+    }
+  ]
+}

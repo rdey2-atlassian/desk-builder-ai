@@ -1,0 +1,92 @@
+{
+  "heartbeats": [
+    {
+      "id": "backup_job",
+      "name": "Nightly Database Backup",
+      "description": "Critical backup job must complete every 24 hours",
+      "interval_minutes": 1440,
+      "alert_after_minutes": 1500,
+      "last_ping": "2025-10-08T02:30:00Z",
+      "status": "healthy",
+      "service": "Database Backups",
+      "owner": "dba-team@company.com"
+    },
+    {
+      "id": "etl_pipeline",
+      "name": "ETL Data Pipeline",
+      "description": "Hourly data processing pipeline",
+      "interval_minutes": 60,
+      "alert_after_minutes": 75,
+      "last_ping": "2025-10-08T14:00:00Z",
+      "status": "healthy",
+      "service": "Data Pipeline",
+      "owner": "data-eng@company.com"
+    },
+    {
+      "id": "ssl_renewal",
+      "name": "SSL Certificate Monitor",
+      "description": "Checks SSL certificate auto-renewal",
+      "interval_minutes": 10080,
+      "alert_after_minutes": 10440,
+      "last_ping": "2025-10-01T00:00:00Z",
+      "status": "healthy",
+      "service": "Infrastructure",
+      "owner": "platform@company.com"
+    },
+    {
+      "id": "health_check_service",
+      "name": "API Health Check Service",
+      "description": "Service that monitors API endpoints",
+      "interval_minutes": 5,
+      "alert_after_minutes": 10,
+      "last_ping": "2025-10-08T14:55:00Z",
+      "status": "healthy",
+      "service": "Monitoring",
+      "owner": "sre-team@company.com"
+    },
+    {
+      "id": "batch_invoice",
+      "name": "Monthly Invoice Generation",
+      "description": "Billing batch job runs first of each month",
+      "interval_minutes": 43200,
+      "alert_after_minutes": 44640,
+      "last_ping": "2025-10-01T03:00:00Z",
+      "status": "healthy",
+      "service": "Billing",
+      "owner": "finance-eng@company.com"
+    },
+    {
+      "id": "log_archival",
+      "name": "Log Archival Job",
+      "description": "Daily log compression and S3 upload",
+      "interval_minutes": 1440,
+      "alert_after_minutes": 1560,
+      "last_ping": "2025-10-08T01:00:00Z",
+      "status": "healthy",
+      "service": "Logging",
+      "owner": "platform@company.com"
+    },
+    {
+      "id": "cache_warmup",
+      "name": "Cache Warmup Service",
+      "description": "Keeps application cache primed",
+      "interval_minutes": 15,
+      "alert_after_minutes": 20,
+      "last_ping": "2025-10-08T14:45:00Z",
+      "status": "healthy",
+      "service": "Application",
+      "owner": "backend-team@company.com"
+    },
+    {
+      "id": "metrics_export",
+      "name": "Metrics Export to Data Warehouse",
+      "description": "Exports metrics every 6 hours",
+      "interval_minutes": 360,
+      "alert_after_minutes": 390,
+      "last_ping": "2025-10-08T12:00:00Z",
+      "status": "healthy",
+      "service": "Analytics",
+      "owner": "data-eng@company.com"
+    }
+  ]
+}

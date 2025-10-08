@@ -1,0 +1,40 @@
+{
+  "solution": "IT Operations",
+  "org_size": 200,
+  "connectors": {
+    "datadog": "connected",
+    "slack": "connected",
+    "pagerduty": "connected",
+    "jira": "connected",
+    "statuspage": "connected",
+    "grafana": "missing",
+    "new_relic": "missing"
+  },
+  "playbooks": [
+    "p1_incident",
+    "p2_incident",
+    "security_breach",
+    "data_loss",
+    "service_degradation"
+  ],
+  "roles": ["ops_admin", "oncall_manager", "responder", "stakeholder"],
+  "schedules": {
+    "primary": "24x7 follow-the-sun",
+    "secondary": "weekday business hours",
+    "escalation": "management chain"
+  },
+  "escalations": {
+    "p1": {
+      "step1_min": 5,
+      "step2_min": 15,
+      "step3_min": 30
+    },
+    "p2": {
+      "step1_min": 15,
+      "step2_min": 60
+    }
+  },
+  "integrations_count": 5,
+  "heartbeats_configured": 8,
+  "alert_rules": 25
+}

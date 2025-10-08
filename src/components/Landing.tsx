@@ -28,6 +28,12 @@ const Landing = ({ onGenerate, onScreenShare }: LandingProps) => {
       prompt: "Create a Travel Helpdesk for Atlassian (500 employees). Mac-heavy. Use Okta, Slack, Confluence. Integrate Concur Travel if available.",
     },
     {
+      title: "IT Operations",
+      description: "Incident & operations management",
+      icon: Sparkles,
+      prompt: "Create an IT Operations desk to manage incidents, on-call schedules, and playbooks for a 200-person engineering team.",
+    },
+    {
       title: "HR Helpdesk",
       description: "Employee services and support",
       icon: Users,
@@ -68,7 +74,7 @@ const Landing = ({ onGenerate, onScreenShare }: LandingProps) => {
         </div>
 
         {/* Quick Start Tiles */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {quickStarts.map((quick, idx) => {
             const Icon = quick.icon;
             return (

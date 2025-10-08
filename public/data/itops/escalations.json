@@ -1,0 +1,120 @@
+{
+  "policies": [
+    {
+      "id": "p1_critical",
+      "name": "P1 Critical Escalation",
+      "severity": "P1",
+      "description": "Aggressive escalation for production-down incidents",
+      "steps": [
+        {
+          "step": 1,
+          "delay_minutes": 0,
+          "action": "Notify primary on-call",
+          "target": "schedule:primary_24x7",
+          "notification_methods": ["push", "sms", "voice"]
+        },
+        {
+          "step": 2,
+          "delay_minutes": 5,
+          "action": "If unacknowledged, page secondary",
+          "target": "schedule:secondary_escalation",
+          "notification_methods": ["push", "sms", "voice"],
+          "condition": "not_acknowledged"
+        },
+        {
+          "step": 3,
+          "delay_minutes": 15,
+          "action": "Escalate to engineering leadership",
+          "target": "team:eng_leadership",
+          "notification_methods": ["push", "sms"],
+          "condition": "not_acknowledged"
+        },
+        {
+          "step": 4,
+          "delay_minutes": 30,
+          "action": "Executive notification",
+          "target": "team:executives",
+          "notification_methods": ["push", "email"],
+          "condition": "not_resolved"
+        }
+      ],
+      "repeat": {
+        "enabled": true,
+        "interval_minutes": 15,
+        "max_repeats": 3
+      },
+      "auto_close": false
+    },
+    {
+      "id": "p2_major",
+      "name": "P2 Major Escalation",
+      "severity": "P2",
+      "description": "Standard escalation for major incidents",
+      "steps": [
+        {
+          "step": 1,
+          "delay_minutes": 0,
+          "action": "Notify primary on-call",
+          "target": "schedule:primary_24x7",
+          "notification_methods": ["push", "email"]
+        },
+        {
+          "step": 2,
+          "delay_minutes": 15,
+          "action": "If unacknowledged, page secondary",
+          "target": "schedule:secondary_escalation",
+          "notification_methods": ["push", "sms"],
+          "condition": "not_acknowledged"
+        },
+        {
+          "step": 3,
+          "delay_minutes": 60,
+          "action": "Escalate to team lead if unresolved",
+          "target": "team:team_leads",
+          "notification_methods": ["push", "email"],
+          "condition": "not_resolved"
+        }
+      ],
+      "repeat": {
+        "enabled": true,
+        "interval_minutes": 30,
+        "max_repeats": 2
+      },
+      "auto_close": false
+    },
+    {
+      "id": "security_breach",
+      "name": "Security Breach Escalation",
+      "severity": "P1",
+      "description": "Immediate security team and executive notification",
+      "steps": [
+        {
+          "step": 1,
+          "delay_minutes": 0,
+          "action": "Page security on-call",
+          "target": "schedule:security_oncall",
+          "notification_methods": ["push", "sms", "voice"]
+        },
+        {
+          "step": 1,
+          "delay_minutes": 0,
+          "action": "Notify security leadership",
+          "target": "team:security_leadership",
+          "notification_methods": ["push", "sms"]
+        },
+        {
+          "step": 2,
+          "delay_minutes": 5,
+          "action": "Notify executive team and legal",
+          "target": "team:executives",
+          "notification_methods": ["push", "sms", "email"],
+          "condition": "any"
+        }
+      ],
+      "repeat": {
+        "enabled": false
+      },
+      "auto_close": false
+    }
+  ]
+}

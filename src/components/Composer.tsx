@@ -25,6 +25,12 @@ import IntegrationsTab from "./refine/IntegrationsTab";
 import AutomationsTab from "./refine/AutomationsTab";
 import SLAsTab from "./refine/SLAsTab";
 import TeamRolesTab from "./refine/TeamRolesTab";
+import RolesTab from "./refine/itops/RolesTab";
+import PlaybooksTab from "./refine/itops/PlaybooksTab";
+import SchedulesTab from "./refine/itops/SchedulesTab";
+import EscalationsTab from "./refine/itops/EscalationsTab";
+import HeartbeatsTab from "./refine/itops/HeartbeatsTab";
+import SyncsTab from "./refine/itops/SyncsTab";
 
 interface ComposerProps {
   prompt: string;
@@ -40,7 +46,12 @@ interface BuildStep {
 }
 
 const Composer = ({ prompt, onComplete }: ComposerProps) => {
-  const [steps, setSteps] = useState<BuildStep[]>([
+  // Detect solution type from prompt
+  const isITOps = prompt.toLowerCase().includes("operations") || 
+                  prompt.toLowerCase().includes("incident") ||
+                  prompt.toLowerCase().includes("on-call");
+
+  const travelSteps: BuildStep[] = [
     {
       id: "portal",
       label: "Portal & Channels",
@@ -105,7 +116,74 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
         "VIP group defined",
       ],
     },
-  ]);
+  ];
+
+  const itOpsSteps: BuildStep[] = [
+    {
+      id: "roles",
+      label: "Roles & Access",
+      icon: Users,
+      status: "planned",
+      details: ["4 roles defined: Ops Admin, On-call Manager, Responder, Stakeholder", "Least-privilege access configured"],
+    },
+    {
+      id: "playbooks",
+      label: "Incident Playbooks",
+      icon: Book,
+      status: "planned",
+      details: ["P1/P2 incident response playbooks", "Security breach playbook", "Standard actions & runbook links"],
+    },
+    {
+      id: "integrations",
+      label: "Monitoring Integrations",
+      icon: Zap,
+      status: "planned",
+      details: [
+        "Datadog connected (45 alerts)",
+        "PagerDuty synced (3 schedules)",
+        "Slack war rooms configured",
+        "Jira & Statuspage linked",
+      ],
+    },
+    {
+      id: "schedules",
+      label: "On-call Schedules",
+      icon: Globe,
+      status: "planned",
+      details: ["24×7 follow-the-sun coverage", "Secondary escalation rotation", "Security on-call team"],
+    },
+    {
+      id: "escalations",
+      label: "Escalation Policies",
+      icon: Shield,
+      status: "planned",
+      details: [
+        "P1: 5min → 15min → 30min escalation",
+        "P2: 15min → 60min escalation",
+        "Executive notification rules",
+      ],
+    },
+    {
+      id: "heartbeats",
+      label: "Heartbeats & Monitoring",
+      icon: Settings,
+      status: "planned",
+      details: ["8 critical services monitored", "Backup jobs, ETL pipelines", "Silent failure detection"],
+    },
+    {
+      id: "syncs",
+      label: "User & Team Sync",
+      icon: FileText,
+      status: "planned",
+      details: [
+        "Okta SCIM sync enabled (198 users)",
+        "4 team mappings configured",
+        "Calendar & Slack sync active",
+      ],
+    },
+  ];
+
+  const [steps, setSteps] = useState<BuildStep[]>(isITOps ? itOpsSteps : travelSteps);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -167,6 +245,12 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
       automations: "automations",
       slas: "slas",
       teams: "team",
+      roles: "roles",
+      playbooks: "playbooks",
+      schedules: "schedules",
+      escalations: "escalations",
+      heartbeats: "heartbeats",
+      syncs: "syncs",
     };
     
     const tabName = tabMap[stepId] || "portal";
@@ -194,9 +278,13 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
               {isComplete ? "Complete" : steps[currentStep]?.label}
             </span>
           </div>
-          <h1 className="text-3xl font-bold">Building Your Travel Helpdesk</h1>
+          <h1 className="text-3xl font-bold">
+            {isITOps ? "Building Your IT Operations Desk" : "Building Your Travel Helpdesk"}
+          </h1>
           <p className="text-muted-foreground">
-            Analyzing prompt and assembling components for Atlassian (500 employees)
+            {isITOps 
+              ? "Setting up incident management, on-call schedules, and playbooks" 
+              : "Analyzing prompt and assembling components for Atlassian (500 employees)"}
           </p>
         </div>
 
@@ -218,59 +306,107 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
                 </div>
                 <Tabs value={activeRefineTab} onValueChange={setActiveRefineTab} className="flex flex-col flex-1">
                   <div className="border-b bg-background">
-                    <TabsList className="w-full h-auto grid grid-cols-7 bg-transparent rounded-none p-0">
-                      <TabsTrigger value="portal" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
-                        Portal
-                      </TabsTrigger>
-                      <TabsTrigger value="request-types" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
-                        Requests
-                      </TabsTrigger>
-                      <TabsTrigger value="knowledge" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
-                        Knowledge
-                      </TabsTrigger>
-                      <TabsTrigger value="integrations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
-                        Integrations
-                      </TabsTrigger>
-                      <TabsTrigger value="automations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
-                        Automations
-                      </TabsTrigger>
-                      <TabsTrigger value="slas" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
-                        SLAs
-                      </TabsTrigger>
-                      <TabsTrigger value="team" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
-                        Team
-                      </TabsTrigger>
-                    </TabsList>
+                    {isITOps ? (
+                      <TabsList className="w-full h-auto grid grid-cols-7 bg-transparent rounded-none p-0">
+                        <TabsTrigger value="roles" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Roles
+                        </TabsTrigger>
+                        <TabsTrigger value="playbooks" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Playbooks
+                        </TabsTrigger>
+                        <TabsTrigger value="integrations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Integrations
+                        </TabsTrigger>
+                        <TabsTrigger value="schedules" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Schedules
+                        </TabsTrigger>
+                        <TabsTrigger value="escalations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Escalations
+                        </TabsTrigger>
+                        <TabsTrigger value="heartbeats" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Heartbeats
+                        </TabsTrigger>
+                        <TabsTrigger value="syncs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Syncs
+                        </TabsTrigger>
+                      </TabsList>
+                    ) : (
+                      <TabsList className="w-full h-auto grid grid-cols-7 bg-transparent rounded-none p-0">
+                        <TabsTrigger value="portal" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Portal
+                        </TabsTrigger>
+                        <TabsTrigger value="request-types" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Requests
+                        </TabsTrigger>
+                        <TabsTrigger value="knowledge" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Knowledge
+                        </TabsTrigger>
+                        <TabsTrigger value="integrations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Integrations
+                        </TabsTrigger>
+                        <TabsTrigger value="automations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Automations
+                        </TabsTrigger>
+                        <TabsTrigger value="slas" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          SLAs
+                        </TabsTrigger>
+                        <TabsTrigger value="team" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                          Team
+                        </TabsTrigger>
+                      </TabsList>
+                    )}
                   </div>
 
                   <div className="flex-1 overflow-auto">
-                    <TabsContent value="portal" className="mt-0 h-full p-6">
-                      <PortalTab />
-                    </TabsContent>
-
-                    <TabsContent value="request-types" className="mt-0 h-full p-6">
-                      <RequestTypesTab />
-                    </TabsContent>
-
-                    <TabsContent value="knowledge" className="mt-0 h-full p-6">
-                      <KnowledgeTab />
-                    </TabsContent>
-
-                    <TabsContent value="integrations" className="mt-0 h-full p-6">
-                      <IntegrationsTab />
-                    </TabsContent>
-
-                    <TabsContent value="automations" className="mt-0 h-full p-6">
-                      <AutomationsTab />
-                    </TabsContent>
-
-                    <TabsContent value="slas" className="mt-0 h-full p-6">
-                      <SLAsTab />
-                    </TabsContent>
-
-                    <TabsContent value="team" className="mt-0 h-full p-6">
-                      <TeamRolesTab />
-                    </TabsContent>
+                    {isITOps ? (
+                      <>
+                        <TabsContent value="roles" className="mt-0 h-full p-6">
+                          <RolesTab />
+                        </TabsContent>
+                        <TabsContent value="playbooks" className="mt-0 h-full p-6">
+                          <PlaybooksTab />
+                        </TabsContent>
+                        <TabsContent value="integrations" className="mt-0 h-full p-6">
+                          <IntegrationsTab />
+                        </TabsContent>
+                        <TabsContent value="schedules" className="mt-0 h-full p-6">
+                          <SchedulesTab />
+                        </TabsContent>
+                        <TabsContent value="escalations" className="mt-0 h-full p-6">
+                          <EscalationsTab />
+                        </TabsContent>
+                        <TabsContent value="heartbeats" className="mt-0 h-full p-6">
+                          <HeartbeatsTab />
+                        </TabsContent>
+                        <TabsContent value="syncs" className="mt-0 h-full p-6">
+                          <SyncsTab />
+                        </TabsContent>
+                      </>
+                    ) : (
+                      <>
+                        <TabsContent value="portal" className="mt-0 h-full p-6">
+                          <PortalTab />
+                        </TabsContent>
+                        <TabsContent value="request-types" className="mt-0 h-full p-6">
+                          <RequestTypesTab />
+                        </TabsContent>
+                        <TabsContent value="knowledge" className="mt-0 h-full p-6">
+                          <KnowledgeTab />
+                        </TabsContent>
+                        <TabsContent value="integrations" className="mt-0 h-full p-6">
+                          <IntegrationsTab />
+                        </TabsContent>
+                        <TabsContent value="automations" className="mt-0 h-full p-6">
+                          <AutomationsTab />
+                        </TabsContent>
+                        <TabsContent value="slas" className="mt-0 h-full p-6">
+                          <SLAsTab />
+                        </TabsContent>
+                        <TabsContent value="team" className="mt-0 h-full p-6">
+                          <TeamRolesTab />
+                        </TabsContent>
+                      </>
+                    )}
                   </div>
                 </Tabs>
               </Card>

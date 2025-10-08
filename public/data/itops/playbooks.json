@@ -1,0 +1,152 @@
+{
+  "playbooks": [
+    {
+      "id": "p1_incident",
+      "name": "P1 Critical Incident",
+      "severity": "P1",
+      "description": "Production down or severe customer impact",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Acknowledge incident immediately",
+          "owner": "On-call responder",
+          "automated": true
+        },
+        {
+          "step": 2,
+          "action": "Create Slack war room (#incident-{{ticket_id}})",
+          "owner": "System",
+          "automated": true
+        },
+        {
+          "step": 3,
+          "action": "Page secondary on-call if no ack in 5 min",
+          "owner": "System",
+          "automated": true
+        },
+        {
+          "step": 4,
+          "action": "Update status page with 'Investigating'",
+          "owner": "Incident Commander",
+          "automated": false
+        },
+        {
+          "step": 5,
+          "action": "Check runbook: Production Incident Response",
+          "owner": "Responder",
+          "automated": false,
+          "link": "/runbooks/production-incident"
+        },
+        {
+          "step": 6,
+          "action": "Execute rollback or mitigation steps",
+          "owner": "Responder",
+          "automated": false
+        },
+        {
+          "step": 7,
+          "action": "Update stakeholders every 30 min",
+          "owner": "Incident Commander",
+          "automated": false
+        },
+        {
+          "step": 8,
+          "action": "Create Jira ticket for follow-up",
+          "owner": "System",
+          "automated": true
+        },
+        {
+          "step": 9,
+          "action": "Schedule post-incident review within 48h",
+          "owner": "Ops Manager",
+          "automated": false
+        }
+      ],
+      "escalation": "Page management if unresolved after 1 hour",
+      "notification_channels": ["#incidents", "#exec-alerts"],
+      "cmdb_link": true
+    },
+    {
+      "id": "p2_incident",
+      "name": "P2 Major Incident",
+      "severity": "P2",
+      "description": "Significant degradation affecting subset of users",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Acknowledge incident",
+          "owner": "On-call responder",
+          "automated": false
+        },
+        {
+          "step": 2,
+          "action": "Create incident thread in #incidents",
+          "owner": "System",
+          "automated": true
+        },
+        {
+          "step": 3,
+          "action": "Investigate using monitoring dashboards",
+          "owner": "Responder",
+          "automated": false,
+          "link": "/dashboards/service-health"
+        },
+        {
+          "step": 4,
+          "action": "Update status page if customer-visible",
+          "owner": "Responder",
+          "automated": false
+        },
+        {
+          "step": 5,
+          "action": "Escalate to P1 if impact grows",
+          "owner": "Responder",
+          "automated": false
+        }
+      ],
+      "escalation": "Escalate if unresolved after 4 hours",
+      "notification_channels": ["#incidents"]
+    },
+    {
+      "id": "security_breach",
+      "name": "Security Breach",
+      "severity": "P1",
+      "description": "Potential security incident or data breach",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Page security on-call immediately",
+          "owner": "System",
+          "automated": true
+        },
+        {
+          "step": 2,
+          "action": "Isolate affected systems",
+          "owner": "Security Team",
+          "automated": false
+        },
+        {
+          "step": 3,
+          "action": "Preserve logs and evidence",
+          "owner": "Security Team",
+          "automated": false
+        },
+        {
+          "step": 4,
+          "action": "Notify legal and compliance",
+          "owner": "Security Lead",
+          "automated": false
+        },
+        {
+          "step": 5,
+          "action": "Execute incident response plan",
+          "owner": "Security Team",
+          "automated": false,
+          "link": "/runbooks/security-incident-response"
+        }
+      ],
+      "escalation": "Immediate executive notification",
+      "notification_channels": ["#security-incidents", "#exec-alerts"]
+    }
+  ]
+}

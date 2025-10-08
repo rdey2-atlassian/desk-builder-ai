@@ -1,0 +1,78 @@
+{
+  "monitoring": [
+    {
+      "name": "Datadog",
+      "type": "monitoring",
+      "status": "connected",
+      "description": "Infrastructure and APM monitoring",
+      "features": ["Alert forwarding", "Metric queries", "Dashboard links"],
+      "alert_count": 45
+    },
+    {
+      "name": "Grafana",
+      "type": "monitoring",
+      "status": "missing",
+      "description": "Visualization and alerting",
+      "features": ["Alert forwarding", "Dashboard embeds"]
+    },
+    {
+      "name": "New Relic",
+      "type": "apm",
+      "status": "missing",
+      "description": "Application performance monitoring",
+      "features": ["Alert forwarding", "Transaction traces"]
+    },
+    {
+      "name": "Prometheus",
+      "type": "monitoring",
+      "status": "missing",
+      "description": "Metrics and time-series database",
+      "features": ["Alert forwarding", "PromQL queries"]
+    }
+  ],
+  "incident_mgmt": [
+    {
+      "name": "PagerDuty",
+      "type": "alerting",
+      "status": "connected",
+      "description": "Incident alerting and on-call management",
+      "features": ["Bidirectional sync", "Schedule sync", "Escalations"],
+      "schedules_synced": 3
+    },
+    {
+      "name": "Jira Service Management",
+      "type": "ticketing",
+      "status": "connected",
+      "description": "Service desk and project tracking",
+      "features": ["Ticket creation", "Status sync", "Workflow automation"],
+      "projects_linked": 2
+    },
+    {
+      "name": "Statuspage",
+      "type": "communication",
+      "status": "connected",
+      "description": "Customer-facing status updates",
+      "features": ["Auto-update on incidents", "Component mapping"],
+      "components": 8
+    }
+  ],
+  "collaboration": [
+    {
+      "name": "Slack",
+      "type": "chat",
+      "status": "connected",
+      "description": "Team communication and war rooms",
+      "features": ["Auto-create channels", "Alert notifications", "ChatOps commands"],
+      "channels_configured": ["#incidents", "#on-call", "#exec-alerts"]
+    }
+  ],
+  "cloud": [
+    {
+      "name": "AWS CloudWatch",
+      "type": "cloud_monitoring",
+      "status": "missing",
+      "description": "AWS infrastructure monitoring",
+      "features": ["Alert forwarding", "Log insights"]
+    }
+  ]
+}

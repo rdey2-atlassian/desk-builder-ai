@@ -1,0 +1,74 @@
+{
+  "schedules": [
+    {
+      "id": "primary_24x7",
+      "name": "Primary On-Call (24×7)",
+      "description": "Follow-the-sun coverage across all time zones",
+      "type": "24x7",
+      "rotations": [
+        {
+          "name": "AMER Shift",
+          "timezone": "America/Los_Angeles",
+          "hours": "08:00 - 17:00 PST",
+          "members": ["alice@company.com", "bob@company.com", "charlie@company.com"],
+          "rotation_type": "weekly",
+          "handoff_day": "Monday"
+        },
+        {
+          "name": "EMEA Shift",
+          "timezone": "Europe/London",
+          "hours": "08:00 - 17:00 GMT",
+          "members": ["david@company.com", "emma@company.com"],
+          "rotation_type": "weekly",
+          "handoff_day": "Monday"
+        },
+        {
+          "name": "APAC Shift",
+          "timezone": "Asia/Singapore",
+          "hours": "08:00 - 17:00 SGT",
+          "members": ["frank@company.com", "grace@company.com"],
+          "rotation_type": "weekly",
+          "handoff_day": "Monday"
+        }
+      ],
+      "overrides": [
+        {
+          "user": "alice@company.com",
+          "reason": "Conference attendance",
+          "start": "2025-10-15T00:00:00Z",
+          "end": "2025-10-17T23:59:59Z",
+          "replaced_by": "charlie@company.com"
+        }
+      ]
+    },
+    {
+      "id": "secondary_escalation",
+      "name": "Secondary Escalation",
+      "description": "Backup on-call for unacknowledged P1 incidents",
+      "type": "escalation",
+      "rotations": [
+        {
+          "name": "Engineering Managers",
+          "timezone": "America/New_York",
+          "members": ["manager1@company.com", "manager2@company.com"],
+          "rotation_type": "weekly"
+        }
+      ]
+    },
+    {
+      "id": "security_oncall",
+      "name": "Security On-Call",
+      "description": "Dedicated security incident response",
+      "type": "specialized",
+      "rotations": [
+        {
+          "name": "Security Team",
+          "timezone": "America/New_York",
+          "hours": "24×7",
+          "members": ["security1@company.com", "security2@company.com"],
+          "rotation_type": "weekly"
+        }
+      ]
+    }
+  ]
+}
