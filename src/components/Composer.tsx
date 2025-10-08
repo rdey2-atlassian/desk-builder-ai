@@ -201,52 +201,10 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6">
-          {/* Left: Build Components (70%) */}
-          <div className="space-y-3">
-            {steps.map((step) => {
-              const Icon = step.icon;
-              return (
-                <Card
-                  key={step.id}
-                  className={`p-4 transition-smooth cursor-pointer hover:shadow-lg ${getStatusColor(step.status)}`}
-                  onClick={() => step.status === "ready" && handleEditStep(step.id)}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-background flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold">{step.label}</h3>
-                        {getStatusIcon(step.status)}
-                        {step.status === "ready" && (
-                          <Edit className="w-4 h-4 text-muted-foreground ml-auto" />
-                        )}
-                      </div>
-                      {step.status !== "planned" && step.details && (
-                        <ul className="space-y-1 text-sm text-muted-foreground">
-                          {step.details.map((detail, didx) => (
-                            <li
-                              key={didx}
-                              className="flex items-center gap-2 animate-fade-in"
-                            >
-                              <div className="w-1 h-1 rounded-full bg-primary" />
-                              {detail}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-
-          {/* Right: Chat Interface or Refine Tabs (30%) */}
-          <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)]">
+          {/* Left: Build Components or Edit Experience (70%) */}
+          <div>
             {editingTab ? (
-              <Card className="h-full flex flex-col">
+              <Card className="h-[calc(100vh-12rem)] flex flex-col">
                 <div className="flex items-center justify-between p-4 border-b">
                   <h2 className="text-lg font-semibold">Refine Your Helpdesk</h2>
                   <Button
@@ -257,58 +215,104 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
-                <div className="flex-1 overflow-auto p-4">
-                  <Tabs value={activeRefineTab} onValueChange={setActiveRefineTab} className="space-y-4">
-                    <TabsList className="grid w-full grid-cols-7 text-xs">
-                      <TabsTrigger value="portal" className="text-xs">Portal</TabsTrigger>
-                      <TabsTrigger value="request-types" className="text-xs">Requests</TabsTrigger>
-                      <TabsTrigger value="knowledge" className="text-xs">Knowledge</TabsTrigger>
-                      <TabsTrigger value="integrations" className="text-xs">Integrations</TabsTrigger>
-                      <TabsTrigger value="automations" className="text-xs">Automations</TabsTrigger>
-                      <TabsTrigger value="slas" className="text-xs">SLAs</TabsTrigger>
-                      <TabsTrigger value="team" className="text-xs">Team</TabsTrigger>
+                <Tabs value={activeRefineTab} onValueChange={setActiveRefineTab} className="flex flex-col h-full">
+                  <div className="border-b px-4">
+                    <TabsList className="grid w-full grid-cols-7 bg-transparent">
+                      <TabsTrigger value="portal">Portal</TabsTrigger>
+                      <TabsTrigger value="request-types">Requests</TabsTrigger>
+                      <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
+                      <TabsTrigger value="integrations">Integrations</TabsTrigger>
+                      <TabsTrigger value="automations">Automations</TabsTrigger>
+                      <TabsTrigger value="slas">SLAs</TabsTrigger>
+                      <TabsTrigger value="team">Team</TabsTrigger>
                     </TabsList>
+                  </div>
 
-                    <TabsContent value="portal" className="space-y-4">
+                  <div className="flex-1 overflow-auto p-6">
+                    <TabsContent value="portal" className="mt-0">
                       <PortalTab />
                     </TabsContent>
 
-                    <TabsContent value="request-types" className="space-y-4">
+                    <TabsContent value="request-types" className="mt-0">
                       <RequestTypesTab />
                     </TabsContent>
 
-                    <TabsContent value="knowledge" className="space-y-4">
+                    <TabsContent value="knowledge" className="mt-0">
                       <KnowledgeTab />
                     </TabsContent>
 
-                    <TabsContent value="integrations" className="space-y-4">
+                    <TabsContent value="integrations" className="mt-0">
                       <IntegrationsTab />
                     </TabsContent>
 
-                    <TabsContent value="automations" className="space-y-4">
+                    <TabsContent value="automations" className="mt-0">
                       <AutomationsTab />
                     </TabsContent>
 
-                    <TabsContent value="slas" className="space-y-4">
+                    <TabsContent value="slas" className="mt-0">
                       <SLAsTab />
                     </TabsContent>
 
-                    <TabsContent value="team" className="space-y-4">
+                    <TabsContent value="team" className="mt-0">
                       <TeamRolesTab />
                     </TabsContent>
-                  </Tabs>
-                </div>
+                  </div>
+                </Tabs>
               </Card>
             ) : (
-              <ChatInterface
-                userPrompt={prompt}
-                currentStep={currentStep}
-                totalSteps={steps.length}
-                steps={steps}
-                onComplete={handleTestOut}
-                isComplete={isComplete}
-              />
+              <div className="space-y-3">
+                {steps.map((step) => {
+                  const Icon = step.icon;
+                  return (
+                    <Card
+                      key={step.id}
+                      className={`p-4 transition-smooth cursor-pointer hover:shadow-lg ${getStatusColor(step.status)}`}
+                      onClick={() => step.status === "ready" && handleEditStep(step.id)}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-background flex items-center justify-center">
+                          <Icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-semibold">{step.label}</h3>
+                            {getStatusIcon(step.status)}
+                            {step.status === "ready" && (
+                              <Edit className="w-4 h-4 text-muted-foreground ml-auto" />
+                            )}
+                          </div>
+                          {step.status !== "planned" && step.details && (
+                            <ul className="space-y-1 text-sm text-muted-foreground">
+                              {step.details.map((detail, didx) => (
+                                <li
+                                  key={didx}
+                                  className="flex items-center gap-2 animate-fade-in"
+                                >
+                                  <div className="w-1 h-1 rounded-full bg-primary" />
+                                  {detail}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
             )}
+          </div>
+
+          {/* Right: Chat Interface (30%) */}
+          <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)]">
+            <ChatInterface
+              userPrompt={prompt}
+              currentStep={currentStep}
+              totalSteps={steps.length}
+              steps={steps}
+              onComplete={handleTestOut}
+              isComplete={isComplete}
+            />
           </div>
         </div>
       </div>
