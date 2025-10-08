@@ -478,51 +478,51 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
               </div>
             )}
 
-            {/* Guidance Notification - Top Right */}
+            {/* Guidance Notification - Right Side Below Header */}
             {showGuidanceDialog && (
-              <div className="absolute top-4 right-4 z-30 animate-slide-up">
-                <Card className="w-96 shadow-2xl border-2 border-primary/20 bg-background">
-                  <div className="p-5 space-y-4">
+              <div className="absolute top-20 right-4 z-30 animate-slide-up">
+                <Card className="w-80 shadow-2xl border-2 border-primary/20 bg-background">
+                  <div className="p-4 space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
                         {allScansComplete ? (
                           <>
-                            <Sparkles className="w-5 h-5 text-primary" />
-                            <h3 className="font-semibold text-lg">All Scans Complete!</h3>
+                            <Sparkles className="w-4 h-4 text-primary" />
+                            <h3 className="font-semibold text-base">All Scans Complete!</h3>
                           </>
                         ) : (
                           <>
-                            <Check className="w-5 h-5 text-success" />
-                            <h3 className="font-semibold text-lg">Scan Complete</h3>
+                            <Check className="w-4 h-4 text-success" />
+                            <h3 className="font-semibold text-base">Scan Complete</h3>
                           </>
                         )}
                       </div>
                       <button 
                         onClick={() => setShowGuidanceDialog(false)}
-                        className="text-muted-foreground hover:text-foreground transition-colors"
+                        className="text-muted-foreground hover:text-foreground transition-colors -mt-1"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
 
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {allScansComplete ? (
-                        "All components analyzed. Ready to build your helpdesk!"
+                        "All components analyzed. Ready to build!"
                       ) : (
-                        `Click the "${COMPONENT_LABELS[nextComponentToScan || "portal"]}" tab to continue scanning.`
+                        `Click "${COMPONENT_LABELS[nextComponentToScan || "portal"]}" tab to continue.`
                       )}
                     </p>
 
-                    <div className="bg-muted/50 p-3 rounded-lg space-y-2">
+                    <div className="bg-muted/50 p-2.5 rounded-lg space-y-1.5">
                       {COMPONENT_SEQUENCE.map((comp) => (
                         <div key={comp} className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
                             {scannedComponents.has(comp) ? (
-                              <Check className="w-3.5 h-3.5 text-success" />
+                              <Check className="w-3 h-3 text-success" />
                             ) : comp === nextComponentToScan ? (
-                              <ArrowRight className="w-3.5 h-3.5 text-primary animate-pulse" />
+                              <ArrowRight className="w-3 h-3 text-primary animate-pulse" />
                             ) : (
-                              <div className="w-3.5 h-3.5 rounded-full border-2 border-muted-foreground/30" />
+                              <div className="w-3 h-3 rounded-full border-2 border-muted-foreground/30" />
                             )}
                             <span className={
                               scannedComponents.has(comp) 
@@ -535,17 +535,17 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
                             </span>
                           </div>
                           {scannedComponents.has(comp) && (
-                            <Badge variant="secondary" className="text-[10px] h-5">✓</Badge>
+                            <Badge variant="secondary" className="text-[10px] h-4 px-1.5">✓</Badge>
                           )}
                           {comp === nextComponentToScan && !scannedComponents.has(comp) && (
-                            <Badge variant="default" className="text-[10px] h-5 animate-pulse">Next</Badge>
+                            <Badge variant="default" className="text-[10px] h-4 px-1.5 animate-pulse">Next</Badge>
                           )}
                         </div>
                       ))}
                     </div>
 
                     {!allScansComplete && nextComponentToScan && (
-                      <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded border border-primary/20">
+                      <div className="bg-blue-50 dark:bg-blue-950 p-2 rounded border border-primary/20">
                         <p className="text-xs text-primary font-medium">
                           👆 Click "{COMPONENT_LABELS[nextComponentToScan]}" above
                         </p>
@@ -554,7 +554,7 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
 
                     {allScansComplete && (
                       <Button onClick={handleBuild} className="w-full" size="sm">
-                        <Sparkles className="w-4 h-4 mr-2" />
+                        <Sparkles className="w-3.5 h-3.5 mr-2" />
                         Build Helpdesk
                       </Button>
                     )}
