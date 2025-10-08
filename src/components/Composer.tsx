@@ -208,23 +208,15 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
           </div>
 
           {/* Right: Chat Interface (30%) */}
-          <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)] flex flex-col gap-4">
+          <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)]">
             <ChatInterface
               userPrompt={prompt}
               currentStep={currentStep}
               totalSteps={steps.length}
               steps={steps}
+              onComplete={handleTestOut}
+              isComplete={isComplete}
             />
-            
-            {isComplete && (
-              <Button
-                onClick={handleTestOut}
-                className="w-full gradient-primary"
-                size="lg"
-              >
-                Yes, let me test it out <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            )}
           </div>
         </div>
       </div>

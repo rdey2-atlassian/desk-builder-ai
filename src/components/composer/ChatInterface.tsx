@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Bot, User } from "lucide-react";
+import { Bot, User, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface Message {
@@ -14,9 +15,11 @@ interface ChatInterfaceProps {
   currentStep: number;
   totalSteps: number;
   steps: Array<{ id: string; label: string }>;
+  onComplete: () => void;
+  isComplete: boolean;
 }
 
-export const ChatInterface = ({ userPrompt, currentStep, totalSteps, steps }: ChatInterfaceProps) => {
+export const ChatInterface = ({ userPrompt, currentStep, totalSteps, steps, onComplete, isComplete }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "user-prompt",
@@ -65,7 +68,7 @@ export const ChatInterface = ({ userPrompt, currentStep, totalSteps, steps }: Ch
         {
           id: "complete",
           role: "assistant",
-          content: "✅ I have finished composing a helpdesk for you and have initialized all the components including portal, request types, knowledge base, integrations, automations, SLAs, and team structure. Would you like to test it out now?",
+          content: "✨ I have successfully completed creating your Travel Helpdesk solution!\n\nHere's what I've built for you:\n\n🌐 Portal & Channels - A branded travel desk portal with email intake\n📋 Request Types - 6 travel-specific request forms with smart routing\n📚 Knowledge Hub - 10 starter articles with travel policies\n⚡ Integrations - Connected Okta, Slack, and Confluence\n⚙️ Automations - Routing rules, approval workflows, and escalations\n🛡️ SLAs - Emergency (5min/1hr) and Standard (4hr/1day) targets\n👥 Teams & Roles - Project structure with Owner, Agent, and Viewer roles\n\nEverything is configured and ready for your organization of 500 employees.",
         },
       ]);
     }
@@ -108,6 +111,18 @@ export const ChatInterface = ({ userPrompt, currentStep, totalSteps, steps }: Ch
           </div>
         ))}
       </div>
+      
+      {isComplete && (
+        <div className="mt-4 pt-4 border-t">
+          <Button
+            onClick={onComplete}
+            className="w-full gradient-primary"
+            size="lg"
+          >
+            Yes, let me test it out <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      )}
     </Card>
   );
 };
