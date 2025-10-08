@@ -1,55 +1,80 @@
 import { useEffect, useState } from "react";
-import { Monitor, Check, Loader2, Sparkles } from "lucide-react";
+import { Monitor, Check, Loader2, Sparkles, ChevronRight, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface ScreenShareSimulationProps {
   onComplete: () => void;
 }
 
-type Tab = "dashboard" | "incidents" | "catalog" | "knowledge";
+type Component = "portal" | "catalog" | "knowledge" | "integrations" | "automations";
+
+const COMPONENT_SEQUENCE: Component[] = ["portal", "catalog", "knowledge", "integrations", "automations"];
+
+const COMPONENT_LABELS: Record<Component, string> = {
+  portal: "Service Portal",
+  catalog: "Service Catalog",
+  knowledge: "Knowledge Base",
+  integrations: "Integrations",
+  automations: "Workflows & Automations"
+};
 
 const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
   const [stage, setStage] = useState<"sharing" | "scanning" | "ready" | "building">("sharing");
   const [progress, setProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
-  const [scannedPages, setScannedPages] = useState<Set<Tab>>(new Set());
-  const [currentlyScanningTab, setCurrentlyScanningTab] = useState<Tab | null>(null);
+  const [activeComponent, setActiveComponent] = useState<Component>("portal");
+  const [scannedComponents, setScannedComponents] = useState<Set<Component>>(new Set());
+  const [currentlyScanningComponent, setCurrentlyScanningComponent] = useState<Component | null>(null);
+  const [showNextDialog, setShowNextDialog] = useState(false);
+  const [scanComplete, setScanComplete] = useState(false);
 
   useEffect(() => {
-    // Simulate screen share starting and auto-scan first page
+    // Simulate screen share starting and auto-scan first component (portal)
     const shareTimer = setTimeout(() => {
-      startScan("dashboard");
+      startScan("portal");
     }, 1500);
 
     return () => clearTimeout(shareTimer);
   }, []);
 
-  const startScan = (tab: Tab) => {
-    setCurrentlyScanningTab(tab);
+  const startScan = (component: Component) => {
+    setCurrentlyScanningComponent(component);
     setStage("scanning");
     setProgress(0);
+    setShowNextDialog(false);
   };
 
   useEffect(() => {
-    if (stage === "scanning" && currentlyScanningTab) {
+    if (stage === "scanning" && currentlyScanningComponent) {
       const interval = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 100) {
             clearInterval(interval);
-            setScannedPages((prevScanned) => new Set(prevScanned).add(currentlyScanningTab));
-            setStage("ready");
-            setCurrentlyScanningTab(null);
+            setScannedComponents((prevScanned) => new Set(prevScanned).add(currentlyScanningComponent));
+            
+            // Check if this was the last component
+            const currentIndex = COMPONENT_SEQUENCE.indexOf(currentlyScanningComponent);
+            if (currentIndex === COMPONENT_SEQUENCE.length - 1) {
+              // All components scanned
+              setScanComplete(true);
+              setStage("ready");
+            } else {
+              // Show dialog to prompt next component
+              setShowNextDialog(true);
+              setStage("ready");
+            }
+            setCurrentlyScanningComponent(null);
             return 100;
           }
           return prev + 5;
         });
-      }, 100);
+      }, 80);
 
       return () => clearInterval(interval);
     }
-  }, [stage, currentlyScanningTab]);
+  }, [stage, currentlyScanningComponent]);
 
   useEffect(() => {
     if (stage === "building") {
@@ -61,12 +86,17 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
     }
   }, [stage, onComplete]);
 
-  const handleTabClick = (tab: Tab) => {
-    if (stage === "ready") {
-      setActiveTab(tab);
-      if (!scannedPages.has(tab)) {
-        startScan(tab);
-      }
+  const handleNextComponent = () => {
+    const currentIndex = COMPONENT_SEQUENCE.indexOf(activeComponent);
+    if (currentIndex < COMPONENT_SEQUENCE.length - 1) {
+      const nextComponent = COMPONENT_SEQUENCE[currentIndex + 1];
+      setActiveComponent(nextComponent);
+      setShowNextDialog(false);
+      
+      // Auto-start scanning the next component after a brief delay
+      setTimeout(() => {
+        startScan(nextComponent);
+      }, 500);
     }
   };
 
@@ -74,81 +104,226 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
     setStage("building");
   };
 
-  const getTabContent = (tab: Tab) => {
-    switch (tab) {
-      case "dashboard":
+  const getNextComponentName = () => {
+    const currentIndex = COMPONENT_SEQUENCE.indexOf(activeComponent);
+    if (currentIndex < COMPONENT_SEQUENCE.length - 1) {
+      return COMPONENT_LABELS[COMPONENT_SEQUENCE[currentIndex + 1]];
+    }
+    return "";
+  };
+
+  const getComponentContent = (component: Component) => {
+    switch (component) {
+      case "portal":
         return (
-          <>
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold mb-2">IT Service Management</h1>
-              <p className="text-muted-foreground">Manage incidents, requests, and service delivery</p>
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-[#0F3554] text-white p-12 rounded-lg mb-6">
+              <h1 className="text-4xl font-bold mb-3">IT Service Portal</h1>
+              <p className="text-blue-100 text-lg">Your one-stop shop for IT services and support</p>
             </div>
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <Card className="p-4">
-                <div className="text-sm text-muted-foreground mb-1">Open Incidents</div>
-                <div className="text-3xl font-bold text-[#0F3554]">24</div>
-              </Card>
-              <Card className="p-4">
-                <div className="text-sm text-muted-foreground mb-1">Pending Requests</div>
-                <div className="text-3xl font-bold text-[#0F3554]">18</div>
-              </Card>
-              <Card className="p-4">
-                <div className="text-sm text-muted-foreground mb-1">Avg Response Time</div>
-                <div className="text-3xl font-bold text-[#0F3554]">2.5h</div>
-              </Card>
-            </div>
-          </>
-        );
-      case "incidents":
-        return (
-          <>
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold mb-2">Incident Management</h1>
-              <p className="text-muted-foreground">Track and resolve IT incidents</p>
-            </div>
-            <Card className="p-6 mb-4">
-              <div className="flex gap-4 mb-4">
-                <Button size="sm" variant="outline">All</Button>
-                <Button size="sm" variant="outline">Open</Button>
-                <Button size="sm" variant="outline">In Progress</Button>
-                <Button size="sm" variant="outline">Resolved</Button>
-              </div>
-            </Card>
-          </>
-        );
-      case "catalog":
-        return (
-          <>
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold mb-2">Service Catalog</h1>
-              <p className="text-muted-foreground">Browse and request IT services</p>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              {["Hardware", "Software", "Access", "Support", "Training", "Other"].map((cat) => (
-                <Card key={cat} className="p-6 text-center">
-                  <div className="font-semibold">{cat}</div>
+            <div className="grid grid-cols-3 gap-6">
+              {[
+                { title: "Get Help", desc: "Submit incident reports", count: "24 open" },
+                { title: "Request Something", desc: "Hardware, software, access", count: "18 pending" },
+                { title: "Knowledge Base", desc: "Self-service articles", count: "1,247 articles" },
+                { title: "My Tickets", desc: "Track your requests", count: "5 active" },
+                { title: "Service Status", desc: "System health", count: "All operational" },
+                { title: "IT News", desc: "Updates & announcements", count: "3 new" }
+              ].map((item, i) => (
+                <Card key={i} className="p-6 hover:shadow-lg transition-shadow cursor-pointer bg-white dark:bg-gray-800">
+                  <h3 className="font-semibold text-lg mb-2 text-[#0F3554] dark:text-blue-300">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{item.desc}</p>
+                  <Badge variant="secondary" className="text-xs">{item.count}</Badge>
                 </Card>
               ))}
             </div>
-          </>
+          </div>
+        );
+      case "catalog":
+        return (
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2 text-[#0F3554] dark:text-blue-200">Service Catalog</h1>
+              <p className="text-muted-foreground">Browse and request IT services</p>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              {[
+                { 
+                  category: "Hardware", 
+                  items: ["Laptop - MacBook Pro", "Monitor - Dell 27\"", "Keyboard & Mouse", "Docking Station", "Headset"],
+                  color: "bg-blue-50 dark:bg-blue-900/20"
+                },
+                { 
+                  category: "Software", 
+                  items: ["Microsoft Office 365", "Adobe Creative Cloud", "Slack Premium", "Zoom Business", "Developer Tools"],
+                  color: "bg-purple-50 dark:bg-purple-900/20"
+                },
+                { 
+                  category: "Access Requests", 
+                  items: ["VPN Access", "Admin Rights", "Shared Drive Access", "Application Access", "Building Badge"],
+                  color: "bg-green-50 dark:bg-green-900/20"
+                },
+                { 
+                  category: "Support Services", 
+                  items: ["Password Reset", "Account Unlock", "Software Installation", "Equipment Repair", "Training Request"],
+                  color: "bg-orange-50 dark:bg-orange-900/20"
+                }
+              ].map((cat, i) => (
+                <Card key={i} className={`p-6 ${cat.color}`}>
+                  <h3 className="font-semibold text-xl mb-4 text-[#0F3554] dark:text-blue-200">{cat.category}</h3>
+                  <ul className="space-y-2">
+                    {cat.items.map((item, j) => (
+                      <li key={j} className="text-sm flex items-center gap-2">
+                        <ChevronRight className="w-4 h-4 text-primary" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              ))}
+            </div>
+          </div>
         );
       case "knowledge":
         return (
-          <>
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold mb-2">Knowledge Base</h1>
-              <p className="text-muted-foreground">Find answers and documentation</p>
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2 text-[#0F3554] dark:text-blue-200">Knowledge Base</h1>
+              <p className="text-muted-foreground">1,247 articles • Updated daily</p>
             </div>
-            <Card className="p-6">
-              <div className="space-y-3">
-                {["How to reset your password", "VPN connection guide", "Software installation procedures"].map((article) => (
-                  <div key={article} className="p-3 bg-gray-50 dark:bg-gray-700 rounded">
-                    {article}
-                  </div>
-                ))}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-semibold mb-4 text-lg">Popular Articles</h3>
+                <div className="space-y-3">
+                  {[
+                    { title: "How to Reset Your Password", views: "12.3K views", helpful: "98%" },
+                    { title: "VPN Setup Guide for Mac & Windows", views: "8.1K views", helpful: "95%" },
+                    { title: "Setting Up Two-Factor Authentication", views: "6.5K views", helpful: "97%" },
+                    { title: "Connecting to Company Wi-Fi", views: "5.2K views", helpful: "99%" },
+                    { title: "Software Installation Procedures", views: "4.8K views", helpful: "94%" }
+                  ].map((article, i) => (
+                    <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-800">
+                      <h4 className="font-medium mb-2 text-[#0F3554] dark:text-blue-300">{article.title}</h4>
+                      <div className="flex gap-4 text-xs text-muted-foreground">
+                        <span>{article.views}</span>
+                        <span>•</span>
+                        <span className="text-success">{article.helpful} helpful</span>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
               </div>
-            </Card>
-          </>
+              <div>
+                <h3 className="font-semibold mb-4 text-lg">Recent Updates</h3>
+                <div className="space-y-3">
+                  {[
+                    { title: "New Security Policy: Multi-Factor Authentication", date: "2 days ago" },
+                    { title: "Zoom 5.15 Update Features & Fixes", date: "5 days ago" },
+                    { title: "Microsoft Teams: Best Practices for Meetings", date: "1 week ago" },
+                    { title: "Acceptable Use Policy Update", date: "2 weeks ago" },
+                    { title: "Cloud Storage Quota Increase", date: "3 weeks ago" }
+                  ].map((article, i) => (
+                    <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-800">
+                      <h4 className="font-medium mb-2 text-[#0F3554] dark:text-blue-300">{article.title}</h4>
+                      <div className="text-xs text-muted-foreground">{article.date}</div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case "integrations":
+        return (
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2 text-[#0F3554] dark:text-blue-200">Integrations</h1>
+              <p className="text-muted-foreground">Connected applications and services</p>
+            </div>
+            <div className="grid grid-cols-3 gap-6">
+              {[
+                { name: "Okta SSO", status: "Connected", type: "Identity" },
+                { name: "Slack", status: "Connected", type: "Communication" },
+                { name: "Microsoft Teams", status: "Connected", type: "Communication" },
+                { name: "Jira Software", status: "Connected", type: "Development" },
+                { name: "Confluence", status: "Connected", type: "Documentation" },
+                { name: "Salesforce", status: "Connected", type: "CRM" },
+                { name: "Zoom", status: "Connected", type: "Video" },
+                { name: "GitHub", status: "Connected", type: "Development" },
+                { name: "AWS", status: "Pending Setup", type: "Cloud" }
+              ].map((integration, i) => (
+                <Card key={i} className="p-6 bg-white dark:bg-gray-800">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="font-semibold text-[#0F3554] dark:text-blue-300">{integration.name}</h3>
+                    <Badge 
+                      variant={integration.status === "Connected" ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {integration.status}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{integration.type}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        );
+      case "automations":
+        return (
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2 text-[#0F3554] dark:text-blue-200">Workflows & Automations</h1>
+              <p className="text-muted-foreground">42 active workflows automating your IT operations</p>
+            </div>
+            <div className="space-y-4">
+              {[
+                { 
+                  name: "Auto-assign tickets by category", 
+                  trigger: "Ticket created", 
+                  actions: "Categorize → Assign to team → Notify",
+                  runs: "1,234 runs this month"
+                },
+                { 
+                  name: "SLA breach escalation", 
+                  trigger: "SLA threshold reached", 
+                  actions: "Notify manager → Reassign to senior → Update priority",
+                  runs: "89 runs this month"
+                },
+                { 
+                  name: "New employee onboarding", 
+                  trigger: "HR system sync", 
+                  actions: "Create accounts → Provision hardware → Send welcome email",
+                  runs: "45 runs this month"
+                },
+                { 
+                  name: "Password reset automation", 
+                  trigger: "Password reset request", 
+                  actions: "Verify identity → Reset password → Notify user → Create KB article",
+                  runs: "678 runs this month"
+                },
+                { 
+                  name: "Auto-close resolved tickets", 
+                  trigger: "7 days after resolution", 
+                  actions: "Send satisfaction survey → Close ticket → Archive",
+                  runs: "892 runs this month"
+                }
+              ].map((workflow, i) => (
+                <Card key={i} className="p-6 bg-white dark:bg-gray-800">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2 text-[#0F3554] dark:text-blue-300">{workflow.name}</h3>
+                      <div className="space-y-1 text-sm">
+                        <div><span className="text-muted-foreground">Trigger:</span> <span className="font-medium">{workflow.trigger}</span></div>
+                        <div><span className="text-muted-foreground">Actions:</span> <span>{workflow.actions}</span></div>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">Active</Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-3">{workflow.runs}</div>
+                </Card>
+              ))}
+            </div>
+          </div>
         );
     }
   };
@@ -162,12 +337,12 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
           <span className="font-medium">You are sharing your screen</span>
           {stage === "ready" && (
             <Badge variant="secondary" className="bg-white/20 text-white">
-              {scannedPages.size} page{scannedPages.size !== 1 ? "s" : ""} scanned
+              {scannedComponents.size} / {COMPONENT_SEQUENCE.length} components scanned
             </Badge>
           )}
         </div>
         <div className="flex items-center gap-3">
-          {stage === "ready" && scannedPages.size > 0 && (
+          {scanComplete && (
             <Button 
               onClick={handleBuild}
               size="sm" 
@@ -202,146 +377,144 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
           <div className="flex-1 overflow-hidden relative">
             <div className="h-full overflow-auto">
               {/* ServiceNow Header */}
-              <div className="bg-[#0F3554] text-white px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="text-2xl font-bold">NOW</div>
-                  <div className="flex gap-6 text-sm">
-                    <button
-                      onClick={() => handleTabClick("dashboard")}
-                      className={`hover:text-blue-300 transition-colors relative ${
-                        activeTab === "dashboard" ? "text-white font-semibold" : "text-blue-200"
-                      }`}
-                    >
-                      Dashboard
-                      {scannedPages.has("dashboard") && (
-                        <Check className="w-3 h-3 inline-block ml-1" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleTabClick("incidents")}
-                      className={`hover:text-blue-300 transition-colors relative ${
-                        activeTab === "incidents" ? "text-white font-semibold" : "text-blue-200"
-                      }`}
-                    >
-                      Incidents
-                      {scannedPages.has("incidents") && (
-                        <Check className="w-3 h-3 inline-block ml-1" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleTabClick("catalog")}
-                      className={`hover:text-blue-300 transition-colors relative ${
-                        activeTab === "catalog" ? "text-white font-semibold" : "text-blue-200"
-                      }`}
-                    >
-                      Service Catalog
-                      {scannedPages.has("catalog") && (
-                        <Check className="w-3 h-3 inline-block ml-1" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleTabClick("knowledge")}
-                      className={`hover:text-blue-300 transition-colors relative ${
-                        activeTab === "knowledge" ? "text-white font-semibold" : "text-blue-200"
-                      }`}
-                    >
-                      Knowledge
-                      {scannedPages.has("knowledge") && (
-                        <Check className="w-3 h-3 inline-block ml-1" />
-                      )}
-                    </button>
+              <div className="bg-[#0F3554] text-white px-6 py-4 border-b border-[#1a4d6f]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-8">
+                    <div className="text-2xl font-bold tracking-tight">NOW</div>
+                    <nav className="flex gap-6 text-sm">
+                      {COMPONENT_SEQUENCE.map((comp) => (
+                        <button
+                          key={comp}
+                          className={`hover:text-blue-200 transition-colors relative pb-1 ${
+                            activeComponent === comp 
+                              ? "text-white font-medium border-b-2 border-white" 
+                              : "text-blue-200"
+                          }`}
+                        >
+                          {COMPONENT_LABELS[comp]}
+                          {scannedComponents.has(comp) && (
+                            <Check className="w-3 h-3 inline-block ml-1 text-success" />
+                          )}
+                        </button>
+                      ))}
+                    </nav>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Badge variant="secondary" className="bg-white/10 text-white border-white/20">
+                      ServiceNow Admin
+                    </Badge>
                   </div>
                 </div>
-                <div className="text-sm">Admin User</div>
               </div>
 
               {/* Content Area */}
-              <div className="p-6 bg-gray-50 dark:bg-gray-800 min-h-[calc(100%-60px)]">
-                {getTabContent(activeTab)}
-
-                {stage === "ready" && activeTab === "dashboard" && (
-                  <Card className="p-6">
-                    <h2 className="text-lg font-semibold mb-4">Recent Tickets</h2>
-                    <div className="space-y-3">
-                      {[
-                        { id: "INC0010234", title: "Laptop not connecting to VPN", priority: "High" },
-                        { id: "INC0010235", title: "Password reset request", priority: "Medium" },
-                        { id: "INC0010236", title: "Software installation - Adobe Creative Suite", priority: "Low" },
-                        { id: "REQ0005123", title: "New employee onboarding", priority: "Medium" },
-                      ].map((ticket) => (
-                        <div key={ticket.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded">
-                          <div className="flex items-center gap-4">
-                            <span className="font-mono text-sm text-[#0F3554] dark:text-blue-300">{ticket.id}</span>
-                            <span>{ticket.title}</span>
-                          </div>
-                          <span className={`text-sm px-3 py-1 rounded ${
-                            ticket.priority === "High" ? "bg-red-100 text-red-700" :
-                            ticket.priority === "Medium" ? "bg-yellow-100 text-yellow-700" :
-                            "bg-green-100 text-green-700"
-                          }`}>
-                            {ticket.priority}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                )}
+              <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-[calc(100%-64px)]">
+                {getComponentContent(activeComponent)}
               </div>
             </div>
 
             {/* Scanning Overlay */}
             {stage === "scanning" && (
-              <div className="absolute inset-0 bg-background/95 flex items-center justify-center animate-fade-in">
-                <Card className="p-8 max-w-md w-full text-center space-y-6">
+              <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center animate-fade-in z-20">
+                <Card className="p-8 max-w-md w-full text-center space-y-6 shadow-2xl">
                   <div className="flex justify-center">
                     <Loader2 className="w-12 h-12 text-primary animate-spin" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">Scanning {currentlyScanningTab}</h3>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Scanning {COMPONENT_LABELS[currentlyScanningComponent as Component]}
+                    </h3>
                     <p className="text-muted-foreground">
-                      AI is analyzing this page and extracting configuration...
+                      AI is analyzing and extracting configuration...
                     </p>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Progress</span>
-                      <span>{progress}%</span>
+                      <span className="font-mono">{progress}%</span>
                     </div>
-                    <div className="w-full bg-secondary rounded-full h-2">
+                    <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
                       <div
                         className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
                   </div>
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    <div className={progress >= 25 ? "text-primary" : ""}>✓ Extracting page structure</div>
-                    <div className={progress >= 50 ? "text-primary" : ""}>✓ Identifying components</div>
-                    <div className={progress >= 75 ? "text-primary" : ""}>✓ Analyzing workflows</div>
-                    <div className={progress >= 100 ? "text-primary" : ""}>✓ Page scan complete</div>
+                  <div className="text-sm space-y-2 text-left">
+                    <div className={`flex items-center gap-2 ${progress >= 20 ? "text-success" : "text-muted-foreground"}`}>
+                      <Check className="w-4 h-4" />
+                      <span>Extracting UI structure</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${progress >= 40 ? "text-success" : "text-muted-foreground"}`}>
+                      <Check className="w-4 h-4" />
+                      <span>Identifying data fields</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${progress >= 60 ? "text-success" : "text-muted-foreground"}`}>
+                      <Check className="w-4 h-4" />
+                      <span>Analyzing workflows</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${progress >= 80 ? "text-success" : "text-muted-foreground"}`}>
+                      <Check className="w-4 h-4" />
+                      <span>Mapping relationships</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${progress >= 100 ? "text-success" : "text-muted-foreground"}`}>
+                      <Check className="w-4 h-4" />
+                      <span>Scan complete</span>
+                    </div>
                   </div>
                 </Card>
               </div>
             )}
 
-            {/* Ready State - Show notification */}
-            {stage === "ready" && (
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-slide-up">
-                <Card className="p-4 shadow-lg border-primary">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Check className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-semibold">Scan complete for this page</p>
-                      <p className="text-sm text-muted-foreground">
-                        Click other tabs to scan more pages, or click "Build Helpdesk" to continue
-                      </p>
+            {/* Next Component Dialog */}
+            <Dialog open={showNextDialog} onOpenChange={setShowNextDialog}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-success" />
+                    {COMPONENT_LABELS[activeComponent]} Scanned Successfully
+                  </DialogTitle>
+                  <DialogDescription>
+                    The AI has successfully analyzed your {COMPONENT_LABELS[activeComponent]}. 
+                    {scannedComponents.size < COMPONENT_SEQUENCE.length - 1 
+                      ? ` To continue building your helpdesk, please navigate to the next component: ${getNextComponentName()}.`
+                      : " All components have been scanned!"}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="bg-muted p-4 rounded-lg">
+                    <h4 className="font-medium mb-2 text-sm">Components Scanned:</h4>
+                    <div className="space-y-1">
+                      {COMPONENT_SEQUENCE.map((comp) => (
+                        <div key={comp} className="flex items-center gap-2 text-sm">
+                          {scannedComponents.has(comp) ? (
+                            <Check className="w-4 h-4 text-success" />
+                          ) : (
+                            <div className="w-4 h-4 rounded-full border-2 border-muted-foreground" />
+                          )}
+                          <span className={scannedComponents.has(comp) ? "text-foreground" : "text-muted-foreground"}>
+                            {COMPONENT_LABELS[comp]}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </Card>
-              </div>
-            )}
+                </div>
+                <DialogFooter>
+                  {scannedComponents.size < COMPONENT_SEQUENCE.length - 1 ? (
+                    <Button onClick={handleNextComponent} className="w-full">
+                      Scan {getNextComponentName()}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  ) : (
+                    <Button onClick={() => setShowNextDialog(false)} className="w-full">
+                      Continue to Build
+                      <Sparkles className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             {/* Building Overlay */}
             {stage === "building" && (
