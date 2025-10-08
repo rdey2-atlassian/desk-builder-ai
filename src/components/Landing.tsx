@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Briefcase, Plane, Users, Sparkles } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Briefcase, Plane, Users, Sparkles, Upload, FileText, Image, Monitor } from "lucide-react";
 
 interface LandingProps {
   onGenerate: (prompt: string) => void;
@@ -10,6 +11,7 @@ interface LandingProps {
 
 const Landing = ({ onGenerate }: LandingProps) => {
   const [prompt, setPrompt] = useState("");
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const quickStarts = [
     {
@@ -84,12 +86,64 @@ const Landing = ({ onGenerate }: LandingProps) => {
 
         {/* Prompt Input */}
         <Card className="p-6 space-y-4">
-          <Textarea
-            placeholder="E.g., Create a Travel Helpdesk for Atlassian (500 employees). Mac-heavy. Use Okta, Slack, Confluence. Integrate Concur Travel if available."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            className="min-h-[120px] text-base resize-none"
-          />
+          <div className="flex items-start gap-3">
+            <Textarea
+              placeholder="E.g., Create a Travel Helpdesk for Atlassian (500 employees). Mac-heavy. Use Okta, Slack, Confluence. Integrate Concur Travel if available."
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="min-h-[120px] text-base resize-none flex-1"
+            />
+            <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="lg" className="h-[120px] px-6">
+                  <Upload className="w-5 h-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Import Existing Service Desk</DialogTitle>
+                  <DialogDescription>
+                    Choose how you'd like to import your existing service desk configuration
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <Card className="p-4 cursor-pointer transition-smooth hover:border-primary group">
+                    <div className="flex items-start gap-4">
+                      <FileText className="w-6 h-6 text-primary mt-1" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Upload Configuration File</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Import a JSON, CSV, or Excel file with your service desk details
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card className="p-4 cursor-pointer transition-smooth hover:border-primary group">
+                    <div className="flex items-start gap-4">
+                      <Image className="w-6 h-6 text-primary mt-1" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Upload Screenshots</h4>
+                        <p className="text-sm text-muted-foreground">
+                          AI will analyze images of your current service desk setup
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card className="p-4 cursor-pointer transition-smooth hover:border-primary group">
+                    <div className="flex items-start gap-4">
+                      <Monitor className="w-6 h-6 text-primary mt-1" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Screen Share & Crawl</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Share your screen and AI will crawl your existing service desk
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">
               {prompt.length} / 500 characters
