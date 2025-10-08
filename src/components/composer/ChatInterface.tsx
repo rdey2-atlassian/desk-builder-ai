@@ -20,23 +20,34 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface = ({ userPrompt, currentStep, totalSteps, steps, onComplete, isComplete }: ChatInterfaceProps) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "user-prompt",
-      role: "user",
-      content: userPrompt,
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Only add user prompt if it exists (from natural language flow)
+    if (userPrompt) {
+      return [
+        {
+          id: "user-prompt",
+          role: "user",
+          content: userPrompt,
+        },
+      ];
+    }
+    // For screen share flow, start with empty messages
+    return [];
+  });
 
   useEffect(() => {
     if (currentStep === 0) {
       // Initial message
+      const initialContent = userPrompt 
+        ? "I'm analyzing your requirements and composing a helpdesk solution for you..."
+        : "I'm analyzing the scanned pages and composing your helpdesk solution...";
+      
       setMessages((prev) => [
         ...prev,
         {
           id: "init",
           role: "assistant",
-          content: "I'm analyzing your requirements and composing a helpdesk solution for you...",
+          content: initialContent,
         },
       ]);
     } else if (currentStep <= totalSteps) {

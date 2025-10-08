@@ -21,6 +21,11 @@ const Index = () => {
     setStage("screen-share");
   };
 
+  const handleScreenShareComplete = () => {
+    setPrompt(""); // No prompt from screen share
+    setStage("composer");
+  };
+
   const handleComposerComplete = () => {
     setStage("refine");
   };
@@ -36,7 +41,7 @@ const Index = () => {
   return (
     <>
       {stage === "landing" && <Landing onGenerate={handleGenerate} onScreenShare={handleScreenShare} />}
-      {stage === "screen-share" && <ScreenShareSimulation onComplete={handleComposerComplete} />}
+      {stage === "screen-share" && <ScreenShareSimulation onComplete={handleScreenShareComplete} />}
       {stage === "composer" && (
         <Composer prompt={prompt} onComplete={handleComposerComplete} />
       )}
