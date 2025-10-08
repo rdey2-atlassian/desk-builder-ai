@@ -6,6 +6,9 @@ import PortalTab from "./refine/PortalTab";
 import RequestTypesTab from "./refine/RequestTypesTab";
 import KnowledgeTab from "./refine/KnowledgeTab";
 import IntegrationsTab from "./refine/IntegrationsTab";
+import AutomationsTab from "./refine/AutomationsTab";
+import SLAsTab from "./refine/SLAsTab";
+import TeamRolesTab from "./refine/TeamRolesTab";
 
 interface RefineProps {
   onContinue: () => void;
@@ -32,11 +35,14 @@ const Refine = ({ onContinue }: RefineProps) => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
             <TabsTrigger value="portal">Portal</TabsTrigger>
             <TabsTrigger value="request-types">Request Types</TabsTrigger>
             <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
             <TabsTrigger value="integrations">Integrations</TabsTrigger>
+            <TabsTrigger value="automations">Automations</TabsTrigger>
+            <TabsTrigger value="slas">SLAs</TabsTrigger>
+            <TabsTrigger value="team">Team & Roles</TabsTrigger>
           </TabsList>
 
           <TabsContent value="portal" className="space-y-4">
@@ -53,6 +59,18 @@ const Refine = ({ onContinue }: RefineProps) => {
 
           <TabsContent value="integrations" className="space-y-4">
             <IntegrationsTab />
+          </TabsContent>
+
+          <TabsContent value="automations" className="space-y-4">
+            <AutomationsTab />
+          </TabsContent>
+
+          <TabsContent value="slas" className="space-y-4">
+            <SLAsTab />
+          </TabsContent>
+
+          <TabsContent value="team" className="space-y-4">
+            <TeamRolesTab />
           </TabsContent>
         </Tabs>
       </div>
