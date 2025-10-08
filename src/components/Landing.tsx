@@ -54,7 +54,7 @@ const Landing = ({ onGenerate }: LandingProps) => {
           <h1 className="text-5xl font-bold tracking-tight">
             Describe your helpdesk.
             <br />
-            <span className="gradient-primary bg-clip-text text-transparent">
+            <span className="text-primary">
               We'll build it.
             </span>
           </h1>
