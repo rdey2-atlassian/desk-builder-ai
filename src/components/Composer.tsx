@@ -11,9 +11,12 @@ import {
   Users, 
   Zap,
   Shield,
-  ChevronRight
+  ChevronRight,
+  Edit
 } from "lucide-react";
 import blueprint from "@/data/blueprint.json";
+import { ChatInterface } from "./composer/ChatInterface";
+import { EditStepDialog } from "./composer/EditStepDialog";
 
 interface ComposerProps {
   prompt: string;
@@ -97,13 +100,16 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
   ]);
 
   const [currentStep, setCurrentStep] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const [editingStep, setEditingStep] = useState<BuildStep | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentStep((prev) => {
         if (prev >= steps.length) {
           clearInterval(interval);
-          setTimeout(onComplete, 1000);
+          setIsComplete(true);
           return prev;
         }
 
@@ -120,7 +126,7 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
     }, 1200);
 
     return () => clearInterval(interval);
-  }, [onComplete, steps.length]);
+  }, [steps.length]);
 
   const getStatusIcon = (status: string) => {
     if (status === "ready") return <Check className="w-4 h-4 text-success" />;
@@ -134,6 +140,25 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
     return "border-border bg-background-secondary";
   };
 
+  const handleEditStep = (step: BuildStep) => {
+    setEditingStep(step);
+    setShowEditDialog(true);
+  };
+
+  const handleSaveStep = (details: string[]) => {
+    if (editingStep) {
+      setSteps((s) =>
+        s.map((step) =>
+          step.id === editingStep.id ? { ...step, details } : step
+        )
+      );
+    }
+  };
+
+  const handleTestOut = () => {
+    onComplete();
+  };
+
   return (
     <div className="min-h-screen p-6 bg-background">
       <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
@@ -143,7 +168,7 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
             <span>Composing solution</span>
             <ChevronRight className="w-4 h-4" />
             <span className="text-foreground font-medium">
-              {steps[currentStep]?.label || "Complete"}
+              {isComplete ? "Complete" : steps[currentStep]?.label}
             </span>
           </div>
           <h1 className="text-3xl font-bold">Building Your Travel Helpdesk</h1>
@@ -152,15 +177,16 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Build Log */}
-          <div className="lg:col-span-2 space-y-3">
-            {steps.map((step, idx) => {
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left: Build Components */}
+          <div className="space-y-3">
+            {steps.map((step) => {
               const Icon = step.icon;
               return (
                 <Card
                   key={step.id}
-                  className={`p-4 transition-smooth ${getStatusColor(step.status)}`}
+                  className={`p-4 transition-smooth cursor-pointer hover:shadow-lg ${getStatusColor(step.status)}`}
+                  onClick={() => step.status === "ready" && handleEditStep(step)}
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-background flex items-center justify-center">
@@ -170,6 +196,9 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold">{step.label}</h3>
                         {getStatusIcon(step.status)}
+                        {step.status === "ready" && (
+                          <Edit className="w-4 h-4 text-muted-foreground ml-auto" />
+                        )}
                       </div>
                       {step.status !== "planned" && step.details && (
                         <ul className="space-y-1 text-sm text-muted-foreground">
@@ -189,83 +218,36 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
                 </Card>
               );
             })}
-          </div>
 
-          {/* Blueprint Sidebar */}
-          <div className="space-y-4">
-            <Card className="p-6 space-y-4">
-              <h3 className="font-semibold text-lg">Blueprint</h3>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Organization:</span>
-                  <p className="font-medium">Atlassian</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Size:</span>
-                  <p className="font-medium">{blueprint.org_size} employees</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Catalog:</span>
-                  <p className="font-medium">{blueprint.catalog.length} request types</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Knowledge:</span>
-                  <p className="font-medium">{blueprint.kb_seed_count} articles</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Integrations:</span>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {Object.entries(blueprint.connectors).map(([key, status]) => (
-                      <div
-                        key={key}
-                        className={`px-2 py-1 rounded text-xs ${
-                          status === "connected"
-                            ? "bg-success/20 text-success"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {key}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 space-y-3">
-              <h3 className="font-semibold">SLA Defaults</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">P1 First Response:</span>
-                  <span className="font-medium">5 min</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">P1 Resolve Target:</span>
-                  <span className="font-medium">1 hour</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Standard Response:</span>
-                  <span className="font-medium">4 hours</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Standard Resolve:</span>
-                  <span className="font-medium">1 day</span>
-                </div>
-              </div>
-            </Card>
-
-            {currentStep >= steps.length && (
+            {isComplete && (
               <Button
-                onClick={onComplete}
-                className="w-full gradient-primary"
+                onClick={handleTestOut}
+                className="w-full gradient-primary mt-4"
                 size="lg"
               >
-                Continue to Refine <ChevronRight className="w-4 h-4 ml-2" />
+                Yes, let me test it out <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             )}
           </div>
+
+          {/* Right: Chat Interface */}
+          <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)]">
+            <ChatInterface
+              userPrompt={prompt}
+              currentStep={currentStep}
+              totalSteps={steps.length}
+              steps={steps}
+            />
+          </div>
         </div>
       </div>
+
+      <EditStepDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        step={editingStep}
+        onSave={handleSaveStep}
+      />
     </div>
   );
 };
