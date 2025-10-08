@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import blueprint from "@/data/blueprint.json";
 import { ChatInterface } from "./composer/ChatInterface";
-import { EditStepDialog } from "./composer/EditStepDialog";
 
 interface ComposerProps {
   prompt: string;
@@ -101,8 +100,6 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [editingStep, setEditingStep] = useState<BuildStep | null>(null);
-  const [showEditDialog, setShowEditDialog] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -140,19 +137,9 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
     return "border-border bg-background-secondary";
   };
 
-  const handleEditStep = (step: BuildStep) => {
-    setEditingStep(step);
-    setShowEditDialog(true);
-  };
-
-  const handleSaveStep = (details: string[]) => {
-    if (editingStep) {
-      setSteps((s) =>
-        s.map((step) =>
-          step.id === editingStep.id ? { ...step, details } : step
-        )
-      );
-    }
+  const handleEditStep = () => {
+    // Navigate to Refine screen for editing
+    onComplete();
   };
 
   const handleTestOut = () => {
@@ -177,8 +164,8 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: Build Components */}
+        <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6">
+          {/* Left: Build Components (70%) */}
           <div className="space-y-3">
             {steps.map((step) => {
               const Icon = step.icon;
@@ -186,7 +173,7 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
                 <Card
                   key={step.id}
                   className={`p-4 transition-smooth cursor-pointer hover:shadow-lg ${getStatusColor(step.status)}`}
-                  onClick={() => step.status === "ready" && handleEditStep(step)}
+                  onClick={() => step.status === "ready" && handleEditStep()}
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-background flex items-center justify-center">
@@ -218,36 +205,29 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
                 </Card>
               );
             })}
-
-            {isComplete && (
-              <Button
-                onClick={handleTestOut}
-                className="w-full gradient-primary mt-4"
-                size="lg"
-              >
-                Yes, let me test it out <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            )}
           </div>
 
-          {/* Right: Chat Interface */}
-          <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)]">
+          {/* Right: Chat Interface (30%) */}
+          <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)] flex flex-col gap-4">
             <ChatInterface
               userPrompt={prompt}
               currentStep={currentStep}
               totalSteps={steps.length}
               steps={steps}
             />
+            
+            {isComplete && (
+              <Button
+                onClick={handleTestOut}
+                className="w-full gradient-primary"
+                size="lg"
+              >
+                Yes, let me test it out <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
-
-      <EditStepDialog
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
-        step={editingStep}
-        onSave={handleSaveStep}
-      />
     </div>
   );
 };
