@@ -31,6 +31,7 @@ import SchedulesTab from "./refine/itops/SchedulesTab";
 import EscalationsTab from "./refine/itops/EscalationsTab";
 import HeartbeatsTab from "./refine/itops/HeartbeatsTab";
 import SyncsTab from "./refine/itops/SyncsTab";
+import ITOpsIntegrationsTab from "./refine/itops/IntegrationsTab";
 
 interface ComposerProps {
   prompt: string;
@@ -367,7 +368,7 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
                           <PlaybooksTab />
                         </TabsContent>
                         <TabsContent value="integrations" className="mt-0 h-full p-6">
-                          <IntegrationsTab />
+                          <ITOpsIntegrationsTab />
                         </TabsContent>
                         <TabsContent value="schedules" className="mt-0 h-full p-6">
                           <SchedulesTab />
