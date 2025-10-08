@@ -1,122 +1,185 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Sparkles, Headphones, Users, Plane } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Briefcase, Plane, Users, Sparkles, Upload, FileText, Image, Monitor } from "lucide-react";
 
-export const Landing = () => {
-  const navigate = useNavigate();
-  const [prompt, setPrompt] = useState(
-    "Create a Travel Helpdesk for Atlassian (500 employees). Mac-heavy. Use Okta, Slack, Confluence. Integrate Concur if available."
-  );
+interface LandingProps {
+  onGenerate: (prompt: string) => void;
+  onScreenShare: () => void;
+}
+
+const Landing = ({ onGenerate, onScreenShare }: LandingProps) => {
+  const [prompt, setPrompt] = useState("");
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const quickStarts = [
     {
-      icon: Headphones,
       title: "IT Helpdesk",
-      description: "Hardware, software, and access requests",
-      prompt: "Create an IT Helpdesk for a tech company with 500 employees. Mac-heavy. Use Okta, Slack, Jira.",
+      description: "Technical support for employees",
+      icon: Briefcase,
+      prompt: "Create an IT Helpdesk for a mid-sized tech company with 300 employees.",
     },
     {
-      icon: Plane,
       title: "Travel Helpdesk",
-      description: "Business travel, visas, and emergency support",
-      prompt: "Create a Travel Helpdesk for Atlassian (500 employees). Mac-heavy. Use Okta, Slack, Confluence. Integrate Concur if available.",
+      description: "Corporate travel management",
+      icon: Plane,
+      prompt: "Create a Travel Helpdesk for Atlassian (500 employees). Mac-heavy. Use Okta, Slack, Confluence. Integrate Concur Travel if available.",
     },
     {
-      icon: Users,
       title: "HR Helpdesk",
-      description: "Onboarding, benefits, and policy questions",
-      prompt: "Create an HR Helpdesk for a global company with 500 employees. Use Okta, Slack, Workday, BambooHR.",
+      description: "Employee services and support",
+      icon: Users,
+      prompt: "Create an HR Helpdesk for employee onboarding, benefits, and general HR queries.",
     },
   ];
 
-  const handleCompose = () => {
-    navigate("/compose");
+  const handleQuickStart = (quickPrompt: string) => {
+    setPrompt(quickPrompt);
+  };
+
+  const handleGenerate = () => {
+    if (prompt.trim()) {
+      onGenerate(prompt);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto space-y-12">
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              <Sparkles className="h-4 w-4" />
-              Desk Builder AI
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold">
-              Build Your Helpdesk in Minutes
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Describe your team's needs and we'll generate a complete helpdesk solution with portal, workflows, and integrations.
-            </p>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+      <div className="w-full max-w-4xl space-y-8 animate-fade-in">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">AI Helpdesk Composer</span>
           </div>
+          <h1 className="text-5xl font-bold tracking-tight">
+            Describe your helpdesk.
+            <br />
+            <span className="text-primary">
+              We'll build it.
+            </span>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            From natural language to a production-ready helpdesk in minutes.
+            No configuration needed.
+          </p>
+        </div>
 
-          {/* Quick Starts */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Quick Start Templates</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {quickStarts.map((qs) => (
-                <Card
-                  key={qs.title}
-                  className="p-6 cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-                  onClick={() => setPrompt(qs.prompt)}
-                >
-                  <div className="space-y-3">
-                    <div className="p-3 rounded-lg bg-primary/10 w-fit">
-                      <qs.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="font-semibold">{qs.title}</h3>
-                    <p className="text-sm text-muted-foreground">{qs.description}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
+        {/* Quick Start Tiles */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {quickStarts.map((quick, idx) => {
+            const Icon = quick.icon;
+            return (
+              <Card
+                key={idx}
+                className="p-6 cursor-pointer transition-smooth hover:border-primary hover:glow-primary group"
+                onClick={() => handleQuickStart(quick.prompt)}
+              >
+                <Icon className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="text-lg font-semibold mb-2">{quick.title}</h3>
+                <p className="text-sm text-muted-foreground">{quick.description}</p>
+              </Card>
+            );
+          })}
+        </div>
 
-          {/* Prompt Input */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Or Describe Your Needs</h2>
+        {/* Prompt Input */}
+        <Card className="p-6 space-y-4">
+          <div className="flex items-start gap-3">
             <Textarea
+              placeholder="E.g., Create a Travel Helpdesk for Atlassian (500 employees). Mac-heavy. Use Okta, Slack, Confluence. Integrate Concur Travel if available."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe your helpdesk requirements..."
-              className="min-h-[120px] text-base"
+              className="min-h-[120px] text-base resize-none flex-1"
             />
+            <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="lg" className="h-[120px] px-6">
+                  <Upload className="w-5 h-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Import Existing Service Desk</DialogTitle>
+                  <DialogDescription>
+                    Choose how you'd like to import your existing service desk configuration
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <Card className="p-4 cursor-pointer transition-smooth hover:border-primary group">
+                    <div className="flex items-start gap-4">
+                      <FileText className="w-6 h-6 text-primary mt-1" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Upload Configuration File</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Import a JSON, CSV, or Excel file with your service desk details
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card className="p-4 cursor-pointer transition-smooth hover:border-primary group">
+                    <div className="flex items-start gap-4">
+                      <Image className="w-6 h-6 text-primary mt-1" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Upload Screenshots</h4>
+                        <p className="text-sm text-muted-foreground">
+                          AI will analyze images of your current service desk setup
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card 
+                    className="p-4 cursor-pointer transition-smooth hover:border-primary group"
+                    onClick={() => {
+                      setImportDialogOpen(false);
+                      onScreenShare();
+                    }}
+                  >
+                    <div className="flex items-start gap-4">
+                      <Monitor className="w-6 h-6 text-primary mt-1" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Screen Share & Crawl</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Share your screen and AI will crawl your existing service desk
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">
+              {prompt.length} / 500 characters
+            </p>
             <Button
-              onClick={handleCompose}
-              size="lg"
-              className="w-full md:w-auto gap-2"
+              onClick={handleGenerate}
               disabled={!prompt.trim()}
+              size="lg"
+              className="gradient-primary hover:opacity-90"
             >
-              <Sparkles className="h-4 w-4" />
-              Compose Solution
+              <Sparkles className="w-4 h-4 mr-2" />
+              Generate Helpdesk
             </Button>
           </div>
+        </Card>
 
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t">
-            <div className="text-center space-y-2">
-              <h3 className="font-semibold">Smart Portal</h3>
-              <p className="text-sm text-muted-foreground">
-                Auto-generated request forms with policy enforcement
-              </p>
+        {/* Features */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center pt-8">
+          {[
+            { label: "Portal & Channels", value: "Auto-generated" },
+            { label: "Request Types", value: "Pre-configured" },
+            { label: "Knowledge Base", value: "AI-seeded" },
+            { label: "Integrations", value: "One-click" },
+          ].map((feature, idx) => (
+            <div key={idx} className="space-y-1">
+              <p className="text-2xl font-bold text-primary">{feature.value}</p>
+              <p className="text-sm text-muted-foreground">{feature.label}</p>
             </div>
-            <div className="text-center space-y-2">
-              <h3 className="font-semibold">Workflow Automation</h3>
-              <p className="text-sm text-muted-foreground">
-                Routing, approvals, and escalations built-in
-              </p>
-            </div>
-            <div className="text-center space-y-2">
-              <h3 className="font-semibold">Integrations</h3>
-              <p className="text-sm text-muted-foreground">
-                Connect to Okta, Slack, and your existing tools
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
