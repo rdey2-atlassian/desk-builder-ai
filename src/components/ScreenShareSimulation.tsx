@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Monitor, Check, Loader2, Sparkles, ChevronRight, ArrowRight } from "lucide-react";
+import { Monitor, Check, Loader2, Sparkles, ChevronRight, ArrowRight, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface ScreenShareSimulationProps {
   onComplete: () => void;
@@ -479,45 +478,51 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
               </div>
             )}
 
-            {/* Guidance Dialog */}
-            <Dialog open={showGuidanceDialog} onOpenChange={setShowGuidanceDialog}>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    {allScansComplete ? (
-                      <>
-                        <Sparkles className="w-5 h-5 text-primary" />
-                        All Components Scanned!
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-5 h-5 text-success" />
-                        Scan Complete
-                      </>
-                    )}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {allScansComplete ? (
-                      "The AI has successfully analyzed all components of your service desk. You can now build your helpdesk."
-                    ) : (
-                      `Successfully scanned ${COMPONENT_LABELS[scannedComponents.values().next().value || "portal"]}. 
-                       Please navigate to the "${COMPONENT_LABELS[nextComponentToScan || "portal"]}" tab to continue scanning.`
-                    )}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="bg-muted p-4 rounded-lg">
-                    <h4 className="font-medium mb-3 text-sm">Scanning Progress:</h4>
-                    <div className="space-y-2">
+            {/* Guidance Notification - Top Right */}
+            {showGuidanceDialog && (
+              <div className="absolute top-4 right-4 z-30 animate-slide-up">
+                <Card className="w-96 shadow-2xl border-2 border-primary/20 bg-background">
+                  <div className="p-5 space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        {allScansComplete ? (
+                          <>
+                            <Sparkles className="w-5 h-5 text-primary" />
+                            <h3 className="font-semibold text-lg">All Scans Complete!</h3>
+                          </>
+                        ) : (
+                          <>
+                            <Check className="w-5 h-5 text-success" />
+                            <h3 className="font-semibold text-lg">Scan Complete</h3>
+                          </>
+                        )}
+                      </div>
+                      <button 
+                        onClick={() => setShowGuidanceDialog(false)}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      {allScansComplete ? (
+                        "All components analyzed. Ready to build your helpdesk!"
+                      ) : (
+                        `Click the "${COMPONENT_LABELS[nextComponentToScan || "portal"]}" tab to continue scanning.`
+                      )}
+                    </p>
+
+                    <div className="bg-muted/50 p-3 rounded-lg space-y-2">
                       {COMPONENT_SEQUENCE.map((comp) => (
-                        <div key={comp} className="flex items-center justify-between text-sm">
+                        <div key={comp} className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
                             {scannedComponents.has(comp) ? (
-                              <Check className="w-4 h-4 text-success" />
+                              <Check className="w-3.5 h-3.5 text-success" />
                             ) : comp === nextComponentToScan ? (
-                              <ArrowRight className="w-4 h-4 text-primary animate-pulse" />
+                              <ArrowRight className="w-3.5 h-3.5 text-primary animate-pulse" />
                             ) : (
-                              <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/30" />
+                              <div className="w-3.5 h-3.5 rounded-full border-2 border-muted-foreground/30" />
                             )}
                             <span className={
                               scannedComponents.has(comp) 
@@ -530,37 +535,33 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
                             </span>
                           </div>
                           {scannedComponents.has(comp) && (
-                            <Badge variant="secondary" className="text-xs">Complete</Badge>
+                            <Badge variant="secondary" className="text-[10px] h-5">✓</Badge>
                           )}
                           {comp === nextComponentToScan && !scannedComponents.has(comp) && (
-                            <Badge variant="default" className="text-xs animate-pulse">Next</Badge>
+                            <Badge variant="default" className="text-[10px] h-5 animate-pulse">Next</Badge>
                           )}
                         </div>
                       ))}
                     </div>
+
+                    {!allScansComplete && nextComponentToScan && (
+                      <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded border border-primary/20">
+                        <p className="text-xs text-primary font-medium">
+                          👆 Click "{COMPONENT_LABELS[nextComponentToScan]}" above
+                        </p>
+                      </div>
+                    )}
+
+                    {allScansComplete && (
+                      <Button onClick={handleBuild} className="w-full" size="sm">
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Build Helpdesk
+                      </Button>
+                    )}
                   </div>
-                  {!allScansComplete && nextComponentToScan && (
-                    <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg border border-primary/20">
-                      <p className="text-sm text-primary font-medium">
-                        👆 Click on the "{COMPONENT_LABELS[nextComponentToScan]}" tab above to continue
-                      </p>
-                    </div>
-                  )}
-                </div>
-                <DialogFooter>
-                  {allScansComplete ? (
-                    <Button onClick={handleBuild} className="w-full">
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Build Helpdesk
-                    </Button>
-                  ) : (
-                    <Button onClick={() => setShowGuidanceDialog(false)} variant="outline" className="w-full">
-                      Got it
-                    </Button>
-                  )}
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </Card>
+              </div>
+            )}
 
             {/* Building Overlay */}
             {stage === "building" && (
