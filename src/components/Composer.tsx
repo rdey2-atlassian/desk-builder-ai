@@ -104,9 +104,18 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentStep((prev) => {
-        if (prev >= steps.length) {
+        if (prev > steps.length) {
           clearInterval(interval);
+          return prev;
+        }
+
+        if (prev === steps.length) {
+          // Mark all steps as ready when we reach the end
+          setSteps((s) =>
+            s.map((step) => ({ ...step, status: "ready" as const }))
+          );
           setIsComplete(true);
+          clearInterval(interval);
           return prev;
         }
 
