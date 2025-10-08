@@ -8,119 +8,122 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 20% 98%;
-    --foreground: 220 15% 12%;
+    /* JIRA/Atlassian Design System Colors - HSL */
+    --background: 0 0% 100%;
+    --foreground: 217 48% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 12%;
+    --card-foreground: 217 48% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 12%;
+    --popover-foreground: 217 48% 20%;
 
-    /* Deep blue primary */
-    --primary: 217 91% 60%;
+    /* Primary - JIRA Blue */
+    --primary: 211 100% 43%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 217 91% 70%;
+    --primary-glow: 211 100% 50%;
 
-    /* Light secondary */
-    --secondary: 220 15% 95%;
-    --secondary-foreground: 220 15% 12%;
+    /* Secondary - Neutral Gray */
+    --secondary: 210 10% 93%;
+    --secondary-foreground: 217 48% 20%;
 
-    --muted: 220 15% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 210 10% 95%;
+    --muted-foreground: 215 16% 47%;
 
-    /* Vibrant purple accent */
-    --accent: 270 75% 60%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Lighter Blue */
+    --accent: 210 50% 96%;
+    --accent-foreground: 214 90% 33%;
 
-    /* Emerald success */
-    --success: 142 76% 36%;
+    /* Success - Green */
+    --success: 145 63% 42%;
     --success-foreground: 0 0% 100%;
 
-    /* Amber warning */
+    /* Warning - Orange */
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 217 91% 60%;
+    --border: 210 14% 89%;
+    --input: 210 14% 89%;
+    --ring: 211 100% 43%;
 
-    --radius: 0.5rem;
+    --radius: 3px;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(270 75% 60%));
-    --gradient-subtle: linear-gradient(180deg, hsl(220 20% 98%), hsl(220 15% 96%));
+    /* Gradients - Subtle JIRA-style */
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 43%), hsl(211 100% 50%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 20% 98%));
 
-    /* Shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(217 91% 60% / 0.3);
-    --shadow-glow: 0 0 40px hsl(217 91% 70% / 0.4);
+    /* Shadows - JIRA-style subtle */
+    --shadow-elegant: 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31);
+    --shadow-glow: 0 1px 2px rgba(9, 30, 66, 0.20);
 
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Transitions - Quick and smooth */
+    --transition-smooth: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 217 48% 20%;
+    --sidebar-primary: 211 100% 43%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 10% 95%;
+    --sidebar-accent-foreground: 217 48% 20%;
+    --sidebar-border: 210 14% 89%;
+    --sidebar-ring: 211 100% 43%;
   }
 
   .dark {
-    --background: 220 20% 8%;
-    --foreground: 220 15% 96%;
+    /* JIRA Dark Mode - HSL */
+    --background: 210 20% 9%;
+    --foreground: 210 20% 95%;
 
-    --card: 220 18% 12%;
-    --card-foreground: 220 15% 96%;
+    --card: 210 20% 12%;
+    --card-foreground: 210 20% 95%;
 
-    --popover: 220 18% 12%;
-    --popover-foreground: 220 15% 96%;
+    --popover: 210 20% 12%;
+    --popover-foreground: 210 20% 95%;
 
-    --primary: 217 91% 60%;
+    /* Primary - JIRA Blue */
+    --primary: 211 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 217 91% 70%;
+    --primary-glow: 211 100% 60%;
 
-    --secondary: 220 15% 18%;
-    --secondary-foreground: 220 15% 96%;
+    --secondary: 210 12% 20%;
+    --secondary-foreground: 210 20% 95%;
 
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 210 12% 16%;
+    --muted-foreground: 215 16% 60%;
 
-    --accent: 270 75% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 210 20% 15%;
+    --accent-foreground: 211 100% 70%;
 
-    --success: 142 76% 45%;
+    --success: 145 60% 45%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 55%;
+    --warning: 38 90% 55%;
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 22%;
-    --input: 220 15% 22%;
-    --ring: 217 91% 60%;
+    --border: 210 12% 20%;
+    --input: 210 12% 20%;
+    --ring: 211 100% 50%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(270 75% 60%));
-    --gradient-subtle: linear-gradient(180deg, hsl(220 20% 8%), hsl(220 18% 12%));
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 50%), hsl(211 100% 60%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 20% 9%), hsl(210 20% 12%));
 
-    --shadow-elegant: 0 10px 30px -10px hsl(217 91% 60% / 0.4);
-    --shadow-glow: 0 0 40px hsl(217 91% 70% / 0.5);
+    --shadow-elegant: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 1px 3px rgba(0, 0, 0, 0.5);
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 210 20% 12%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 211 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 210 12% 16%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 210 12% 20%;
+    --sidebar-ring: 211 100% 50%;
   }
 }
 
@@ -131,6 +134,10 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
   }
 }
 
