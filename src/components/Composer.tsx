@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { X } from "lucide-react";
 import { 
   Check, 
   Loader2, 
@@ -16,6 +18,13 @@ import {
 } from "lucide-react";
 import blueprint from "@/data/blueprint.json";
 import { ChatInterface } from "./composer/ChatInterface";
+import PortalTab from "./refine/PortalTab";
+import RequestTypesTab from "./refine/RequestTypesTab";
+import KnowledgeTab from "./refine/KnowledgeTab";
+import IntegrationsTab from "./refine/IntegrationsTab";
+import AutomationsTab from "./refine/AutomationsTab";
+import SLAsTab from "./refine/SLAsTab";
+import TeamRolesTab from "./refine/TeamRolesTab";
 
 interface ComposerProps {
   prompt: string;
@@ -100,6 +109,8 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [editingTab, setEditingTab] = useState<string | null>(null);
+  const [activeRefineTab, setActiveRefineTab] = useState("portal");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -146,9 +157,25 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
     return "border-border bg-background-secondary";
   };
 
-  const handleEditStep = () => {
-    // Navigate to Refine screen for editing
-    onComplete();
+  const handleEditStep = (stepId: string) => {
+    // Map step IDs to refine tab names
+    const tabMap: Record<string, string> = {
+      portal: "portal",
+      request_types: "request-types",
+      knowledge: "knowledge",
+      integrations: "integrations",
+      automations: "automations",
+      slas: "slas",
+      teams: "team",
+    };
+    
+    const tabName = tabMap[stepId] || "portal";
+    setActiveRefineTab(tabName);
+    setEditingTab(stepId);
+  };
+
+  const handleCloseEdit = () => {
+    setEditingTab(null);
   };
 
   const handleTestOut = () => {
@@ -182,7 +209,7 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
                 <Card
                   key={step.id}
                   className={`p-4 transition-smooth cursor-pointer hover:shadow-lg ${getStatusColor(step.status)}`}
-                  onClick={() => step.status === "ready" && handleEditStep()}
+                  onClick={() => step.status === "ready" && handleEditStep(step.id)}
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-background flex items-center justify-center">
@@ -216,16 +243,72 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
             })}
           </div>
 
-          {/* Right: Chat Interface (30%) */}
+          {/* Right: Chat Interface or Refine Tabs (30%) */}
           <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)]">
-            <ChatInterface
-              userPrompt={prompt}
-              currentStep={currentStep}
-              totalSteps={steps.length}
-              steps={steps}
-              onComplete={handleTestOut}
-              isComplete={isComplete}
-            />
+            {editingTab ? (
+              <Card className="h-full flex flex-col">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <h2 className="text-lg font-semibold">Refine Your Helpdesk</h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCloseEdit}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="flex-1 overflow-auto p-4">
+                  <Tabs value={activeRefineTab} onValueChange={setActiveRefineTab} className="space-y-4">
+                    <TabsList className="grid w-full grid-cols-7 text-xs">
+                      <TabsTrigger value="portal" className="text-xs">Portal</TabsTrigger>
+                      <TabsTrigger value="request-types" className="text-xs">Requests</TabsTrigger>
+                      <TabsTrigger value="knowledge" className="text-xs">Knowledge</TabsTrigger>
+                      <TabsTrigger value="integrations" className="text-xs">Integrations</TabsTrigger>
+                      <TabsTrigger value="automations" className="text-xs">Automations</TabsTrigger>
+                      <TabsTrigger value="slas" className="text-xs">SLAs</TabsTrigger>
+                      <TabsTrigger value="team" className="text-xs">Team</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="portal" className="space-y-4">
+                      <PortalTab />
+                    </TabsContent>
+
+                    <TabsContent value="request-types" className="space-y-4">
+                      <RequestTypesTab />
+                    </TabsContent>
+
+                    <TabsContent value="knowledge" className="space-y-4">
+                      <KnowledgeTab />
+                    </TabsContent>
+
+                    <TabsContent value="integrations" className="space-y-4">
+                      <IntegrationsTab />
+                    </TabsContent>
+
+                    <TabsContent value="automations" className="space-y-4">
+                      <AutomationsTab />
+                    </TabsContent>
+
+                    <TabsContent value="slas" className="space-y-4">
+                      <SLAsTab />
+                    </TabsContent>
+
+                    <TabsContent value="team" className="space-y-4">
+                      <TeamRolesTab />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              </Card>
+            ) : (
+              <ChatInterface
+                userPrompt={prompt}
+                currentStep={currentStep}
+                totalSteps={steps.length}
+                steps={steps}
+                onComplete={handleTestOut}
+                isComplete={isComplete}
+              />
+            )}
           </div>
         </div>
       </div>
