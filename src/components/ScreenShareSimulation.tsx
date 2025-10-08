@@ -116,23 +116,24 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
       case "portal":
         return (
           <div className="max-w-6xl mx-auto">
-            <div className="bg-[#0F3554] text-white p-12 rounded-lg mb-6">
-              <h1 className="text-4xl font-bold mb-3">IT Service Portal</h1>
-              <p className="text-blue-100 text-lg">Your one-stop shop for IT services and support</p>
+            <div className="bg-gradient-to-br from-[#293E40] to-[#1f3033] text-white p-12 rounded-sm mb-6 shadow-lg">
+              <h1 className="text-4xl font-bold mb-3" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>IT Service Portal</h1>
+              <p className="text-gray-200 text-lg">Your one-stop shop for IT services and support</p>
             </div>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-5">
               {[
-                { title: "Get Help", desc: "Submit incident reports", count: "24 open" },
-                { title: "Request Something", desc: "Hardware, software, access", count: "18 pending" },
-                { title: "Knowledge Base", desc: "Self-service articles", count: "1,247 articles" },
-                { title: "My Tickets", desc: "Track your requests", count: "5 active" },
-                { title: "Service Status", desc: "System health", count: "All operational" },
-                { title: "IT News", desc: "Updates & announcements", count: "3 new" }
+                { title: "Get Help", desc: "Submit incident reports", count: "24 open", icon: "🎫" },
+                { title: "Request Something", desc: "Hardware, software, access", count: "18 pending", icon: "📦" },
+                { title: "Knowledge Base", desc: "Self-service articles", count: "1,247 articles", icon: "📚" },
+                { title: "My Tickets", desc: "Track your requests", count: "5 active", icon: "📋" },
+                { title: "Service Status", desc: "System health", count: "All operational", icon: "✅" },
+                { title: "IT News", desc: "Updates & announcements", count: "3 new", icon: "📰" }
               ].map((item, i) => (
-                <Card key={i} className="p-6 hover:shadow-lg transition-shadow cursor-pointer bg-white dark:bg-gray-800">
-                  <h3 className="font-semibold text-lg mb-2 text-[#0F3554] dark:text-blue-300">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-3">{item.desc}</p>
-                  <Badge variant="secondary" className="text-xs">{item.count}</Badge>
+                <Card key={i} className="p-6 hover:shadow-md transition-all cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm hover:border-[#80B6A1]">
+                  <div className="text-3xl mb-3">{item.icon}</div>
+                  <h3 className="font-semibold text-lg mb-2 text-[#293E40] dark:text-blue-300">{item.title}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{item.desc}</p>
+                  <Badge variant="secondary" className="text-xs bg-[#E8F4F1] text-[#293E40] border-0">{item.count}</Badge>
                 </Card>
               ))}
             </div>
@@ -142,8 +143,8 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
         return (
           <div className="max-w-6xl mx-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2 text-[#0F3554] dark:text-blue-200">Service Catalog</h1>
-              <p className="text-muted-foreground">Browse and request IT services</p>
+              <h1 className="text-3xl font-bold mb-2 text-[#293E40] dark:text-blue-200" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>Service Catalog</h1>
+              <p className="text-gray-600 dark:text-gray-400">Browse and request IT services</p>
             </div>
             <div className="grid grid-cols-2 gap-6">
               {[
@@ -168,12 +169,12 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
                   color: "bg-orange-50 dark:bg-orange-900/20"
                 }
               ].map((cat, i) => (
-                <Card key={i} className={`p-6 ${cat.color}`}>
-                  <h3 className="font-semibold text-xl mb-4 text-[#0F3554] dark:text-blue-200">{cat.category}</h3>
+                <Card key={i} className={`p-6 ${cat.color} border border-gray-200 dark:border-gray-700 rounded-sm`}>
+                  <h3 className="font-semibold text-xl mb-4 text-[#293E40] dark:text-blue-200">{cat.category}</h3>
                   <ul className="space-y-2">
-                    {cat.items.map((item, j) => (
-                      <li key={j} className="text-sm flex items-center gap-2">
-                        <ChevronRight className="w-4 h-4 text-primary" />
+                  {cat.items.map((item, j) => (
+                      <li key={j} className="text-sm flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                        <ChevronRight className="w-4 h-4 text-[#80B6A1]" />
                         <span>{item}</span>
                       </li>
                     ))}
@@ -187,8 +188,8 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
         return (
           <div className="max-w-6xl mx-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2 text-[#0F3554] dark:text-blue-200">Knowledge Base</h1>
-              <p className="text-muted-foreground">1,247 articles • Updated daily</p>
+              <h1 className="text-3xl font-bold mb-2 text-[#293E40] dark:text-blue-200" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>Knowledge Base</h1>
+              <p className="text-gray-600 dark:text-gray-400">1,247 articles • Updated daily</p>
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div>
@@ -201,8 +202,8 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
                     { title: "Connecting to Company Wi-Fi", views: "5.2K views", helpful: "99%" },
                     { title: "Software Installation Procedures", views: "4.8K views", helpful: "94%" }
                   ].map((article, i) => (
-                    <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-800">
-                      <h4 className="font-medium mb-2 text-[#0F3554] dark:text-blue-300">{article.title}</h4>
+                    <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm hover:border-[#80B6A1]">
+                      <h4 className="font-medium mb-2 text-[#293E40] dark:text-blue-300">{article.title}</h4>
                       <div className="flex gap-4 text-xs text-muted-foreground">
                         <span>{article.views}</span>
                         <span>•</span>
@@ -222,8 +223,8 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
                     { title: "Acceptable Use Policy Update", date: "2 weeks ago" },
                     { title: "Cloud Storage Quota Increase", date: "3 weeks ago" }
                   ].map((article, i) => (
-                    <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-800">
-                      <h4 className="font-medium mb-2 text-[#0F3554] dark:text-blue-300">{article.title}</h4>
+                    <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm hover:border-[#80B6A1]">
+                      <h4 className="font-medium mb-2 text-[#293E40] dark:text-blue-300">{article.title}</h4>
                       <div className="text-xs text-muted-foreground">{article.date}</div>
                     </Card>
                   ))}
@@ -236,8 +237,8 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
         return (
           <div className="max-w-6xl mx-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2 text-[#0F3554] dark:text-blue-200">Integrations</h1>
-              <p className="text-muted-foreground">Connected applications and services</p>
+              <h1 className="text-3xl font-bold mb-2 text-[#293E40] dark:text-blue-200" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>Integrations</h1>
+              <p className="text-gray-600 dark:text-gray-400">Connected applications and services</p>
             </div>
             <div className="grid grid-cols-3 gap-6">
               {[
@@ -251,17 +252,17 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
                 { name: "GitHub", status: "Connected", type: "Development" },
                 { name: "AWS", status: "Pending Setup", type: "Cloud" }
               ].map((integration, i) => (
-                <Card key={i} className="p-6 bg-white dark:bg-gray-800">
+                <Card key={i} className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm hover:border-[#80B6A1] hover:shadow-md transition-all">
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="font-semibold text-[#0F3554] dark:text-blue-300">{integration.name}</h3>
+                    <h3 className="font-semibold text-[#293E40] dark:text-blue-300">{integration.name}</h3>
                     <Badge 
                       variant={integration.status === "Connected" ? "default" : "secondary"}
-                      className="text-xs"
+                      className={integration.status === "Connected" ? "text-xs bg-[#E8F4F1] text-[#293E40] border-0" : "text-xs"}
                     >
                       {integration.status}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground">{integration.type}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{integration.type}</p>
                 </Card>
               ))}
             </div>
@@ -271,8 +272,8 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
         return (
           <div className="max-w-6xl mx-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2 text-[#0F3554] dark:text-blue-200">Workflows & Automations</h1>
-              <p className="text-muted-foreground">42 active workflows automating your IT operations</p>
+              <h1 className="text-3xl font-bold mb-2 text-[#293E40] dark:text-blue-200" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>Workflows & Automations</h1>
+              <p className="text-gray-600 dark:text-gray-400">42 active workflows automating your IT operations</p>
             </div>
             <div className="space-y-4">
               {[
@@ -307,18 +308,18 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
                   runs: "892 runs this month"
                 }
               ].map((workflow, i) => (
-                <Card key={i} className="p-6 bg-white dark:bg-gray-800">
+                <Card key={i} className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm hover:border-[#80B6A1] hover:shadow-md transition-all">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="font-semibold text-lg mb-2 text-[#0F3554] dark:text-blue-300">{workflow.name}</h3>
+                      <h3 className="font-semibold text-lg mb-2 text-[#293E40] dark:text-blue-300">{workflow.name}</h3>
                       <div className="space-y-1 text-sm">
-                        <div><span className="text-muted-foreground">Trigger:</span> <span className="font-medium">{workflow.trigger}</span></div>
-                        <div><span className="text-muted-foreground">Actions:</span> <span>{workflow.actions}</span></div>
+                        <div><span className="text-gray-600 dark:text-gray-400">Trigger:</span> <span className="font-medium text-gray-800 dark:text-gray-200">{workflow.trigger}</span></div>
+                        <div><span className="text-gray-600 dark:text-gray-400">Actions:</span> <span className="text-gray-800 dark:text-gray-200">{workflow.actions}</span></div>
                       </div>
                     </div>
-                    <Badge variant="secondary" className="text-xs">Active</Badge>
+                    <Badge variant="secondary" className="text-xs bg-[#E8F4F1] text-[#293E40] border-0">Active</Badge>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-3">{workflow.runs}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-3">{workflow.runs}</div>
                 </Card>
               ))}
             </div>
@@ -367,8 +368,8 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
             </div>
-            <div className="flex-1 bg-white dark:bg-gray-700 rounded px-4 py-1 text-sm text-muted-foreground">
-              https://company.service-now.com/helpdesk
+            <div className="flex-1 bg-white dark:bg-gray-700 rounded px-4 py-1 text-sm text-gray-600 dark:text-gray-300" style={{ fontFamily: "monospace" }}>
+              https://company.service-now.com/now/nav/ui/classic/params/target/home.do
             </div>
           </div>
 
@@ -376,40 +377,51 @@ const ScreenShareSimulation = ({ onComplete }: ScreenShareSimulationProps) => {
           <div className="flex-1 overflow-hidden relative">
             <div className="h-full overflow-auto">
               {/* ServiceNow Header */}
-              <div className="bg-[#0F3554] text-white px-6 py-4 border-b border-[#1a4d6f]">
+              <div className="bg-[#293E40] text-white px-6 py-3 border-b border-[#1f3033] shadow-md">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-8">
-                    <div className="text-2xl font-bold tracking-tight">NOW</div>
-                    <nav className="flex gap-6 text-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="text-2xl font-bold tracking-wide" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif", color: '#FF0000' }}>
+                        NOW
+                      </div>
+                      <div className="h-6 w-px bg-white/20"></div>
+                    </div>
+                    <nav className="flex gap-6 text-sm" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>
                       {COMPONENT_SEQUENCE.map((comp) => (
                         <button
                           key={comp}
                           onClick={() => handleTabClick(comp)}
                           disabled={stage === "scanning"}
-                          className={`hover:text-blue-200 transition-colors relative pb-1 disabled:opacity-50 disabled:cursor-not-allowed ${
+                          className={`hover:text-[#80B6A1] transition-colors relative pb-1 disabled:opacity-50 disabled:cursor-not-allowed ${
                             activeComponent === comp 
-                              ? "text-white font-medium border-b-2 border-white" 
-                              : "text-blue-200"
+                              ? "text-white font-semibold" 
+                              : "text-gray-300"
                           } ${comp === nextComponentToScan && waitingForNavigation ? "animate-pulse" : ""}`}
                         >
                           {COMPONENT_LABELS[comp]}
                           {scannedComponents.has(comp) && (
-                            <Check className="w-3 h-3 inline-block ml-1 text-green-400" />
+                            <Check className="w-3 h-3 inline-block ml-1 text-[#80B6A1]" />
+                          )}
+                          {activeComponent === comp && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#80B6A1]"></div>
                           )}
                         </button>
                       ))}
                     </nav>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Badge variant="secondary" className="bg-white/10 text-white border-white/20">
-                      ServiceNow Admin
-                    </Badge>
+                    <div className="text-sm text-gray-300" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>
+                      Admin Portal
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-[#80B6A1] flex items-center justify-center text-[#293E40] font-semibold text-sm">
+                      A
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Content Area */}
-              <div className="p-8 bg-gray-50 dark:bg-gray-900 min-h-[calc(100%-64px)]">
+              <div className="p-8 bg-[#F7F9FA] dark:bg-gray-900 min-h-[calc(100%-64px)]" style={{ fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif" }}>
                 {getComponentContent(activeComponent)}
               </div>
             </div>
