@@ -5,8 +5,9 @@ import Refine from "@/components/Refine";
 import Preview from "@/components/Preview";
 import DeploySuccess from "@/components/DeploySuccess";
 import ScreenShareSimulation from "@/components/ScreenShareSimulation";
+import CanvasComposer from "@/components/composer/CanvasComposer";
 
-type Stage = "landing" | "screen-share" | "composer" | "refine" | "preview" | "deploy";
+type Stage = "landing" | "screen-share" | "canvas" | "composer" | "refine" | "preview" | "deploy";
 
 const Index = () => {
   const [stage, setStage] = useState<Stage>("landing");
@@ -14,7 +15,8 @@ const Index = () => {
 
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplateId(templateId);
-    setStage("composer");
+    // Use canvas for blank, composer for pre-built templates
+    setStage(templateId === "blank" ? "canvas" : "composer");
   };
 
   const handleScreenShare = () => {
@@ -23,7 +25,11 @@ const Index = () => {
 
   const handleScreenShareComplete = () => {
     setSelectedTemplateId("blank"); // Start with blank after screen share
-    setStage("composer");
+    setStage("canvas");
+  };
+
+  const handleCanvasComplete = () => {
+    setStage("refine");
   };
 
   const handleComposerComplete = () => {
@@ -42,6 +48,9 @@ const Index = () => {
     <>
       {stage === "landing" && <Landing onTemplateSelect={handleTemplateSelect} onScreenShare={handleScreenShare} />}
       {stage === "screen-share" && <ScreenShareSimulation onComplete={handleScreenShareComplete} />}
+      {stage === "canvas" && (
+        <CanvasComposer templateId={selectedTemplateId} onComplete={handleCanvasComplete} />
+      )}
       {stage === "composer" && (
         <Composer templateId={selectedTemplateId} onComplete={handleComposerComplete} />
       )}
