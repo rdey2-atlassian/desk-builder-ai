@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Eye, Save, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ChevronLeft, ChevronRight, Eye, Save, Sparkles, Download } from "lucide-react";
 import { BlockInstance } from "@/types/blocks";
 import BlockLibrary from "./BlockLibrary";
 import Canvas from "./Canvas";
 import PropertiesPanel from "./PropertiesPanel";
 import DescribePanel from "./DescribePanel";
+import { useToast } from "@/components/ui/use-toast";
+import { compileManifest, runPreflight, buildArtifactsZip } from "@/utils/manifest";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CanvasComposerProps {
   onComplete: () => void;
@@ -18,6 +22,11 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
   const [libraryCollapsed, setLibraryCollapsed] = useState(false);
   const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
   const [showDescribePanel, setShowDescribePanel] = useState(false);
+  const [solutionName, setSolutionName] = useState("Untitled Solution");
+  const [solutionDescription, setSolutionDescription] = useState("");
+  const [solutionId, setSolutionId] = useState<string | null>(null);
+  const [version, setVersion] = useState<number>(1);
+  const { toast } = useToast();
 
   const selectedBlock = blocks.find(b => b.id === selectedBlockId) || null;
 
@@ -53,14 +62,93 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
     }
   };
 
-  const handleSave = () => {
-    console.log("Saving solution manifest:", { templateId, blocks });
-    // TODO: Save to manifest
+  const handleSave = async () => {
+    try {
+      const manifest = compileManifest({
+        templateId,
+        name: solutionName.trim() || "Untitled Solution",
+        description: solutionDescription,
+        blocks,
+      });
+      const issues = runPreflight(blocks);
+
+      if (!solutionId) {
+        const { data, error } = await supabase
+          .from('solutions')
+          .insert({
+            name: manifest.metadata.name,
+            description: manifest.metadata.description,
+            category: 'custom',
+            template_id: templateId,
+            manifest: manifest as any,
+            version
+          } as any)
+          .select('id')
+          .maybeSingle();
+        if (error) throw error;
+        const newId = data?.id as string;
+        setSolutionId(newId);
+        await supabase.from('solution_versions').insert([
+          {
+            solution_id: newId,
+            version,
+            manifest: manifest as any,
+            change_summary: 'Initial version',
+          } as any
+        ] as any);
+      } else {
+        const nextVersion = version + 1;
+        const { error: upErr } = await supabase
+          .from('solutions')
+          .update({ manifest: manifest as any, version: nextVersion } as any)
+          .eq('id', solutionId);
+        if (upErr) throw upErr;
+        await supabase.from('solution_versions').insert([
+          {
+            solution_id: solutionId as string,
+            version: nextVersion,
+            manifest: manifest as any,
+            change_summary: 'Updated manifest',
+          } as any,
+        ] as any);
+        setVersion(nextVersion);
+      }
+
+      const errorCount = issues.filter(i => i.severity === 'error').length;
+      const warnCount = issues.filter(i => i.severity === 'warning').length;
+      toast({
+        title: 'Saved',
+        description: `Manifest saved${errorCount ? ` • ${errorCount} error(s)` : ''}${warnCount ? ` • ${warnCount} warning(s)` : ''}`,
+      });
+    } catch (e) {
+      console.error(e);
+      toast({ title: 'Save failed', description: e instanceof Error ? e.message : 'Unknown error', variant: 'destructive' });
+    }
   };
 
-  const handlePreview = () => {
-    console.log("Previewing solution:", { templateId, blocks });
-    onComplete();
+  const handleExport = async () => {
+    try {
+      const manifest = compileManifest({
+        templateId,
+        name: solutionName.trim() || 'Untitled Solution',
+        description: solutionDescription,
+        blocks,
+      });
+      const issues = runPreflight(blocks);
+      const blob = await buildArtifactsZip({ manifest, issues });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(solutionName || 'solution').replace(/\s+/g, '-').toLowerCase()}-artifacts.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast({ title: 'Exported', description: 'Downloaded compiled-artifacts.zip' });
+    } catch (e) {
+      console.error(e);
+      toast({ title: 'Export failed', description: e instanceof Error ? e.message : 'Unknown error', variant: 'destructive' });
+    }
   };
 
   return (
