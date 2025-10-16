@@ -30,7 +30,7 @@ import { TemplateBlock } from "@/types/templates";
 
 interface ComposerProps {
   templateId: string;
-  onComplete: () => void;
+  onComplete: (data?: { name: string; description: string; blocks: any[]; templateId: string }) => void;
 }
 
 interface BuildStep extends TemplateBlock {
@@ -133,7 +133,12 @@ const Composer = ({ templateId, onComplete }: ComposerProps) => {
   };
 
   const handleTestOut = () => {
-    onComplete();
+    onComplete({
+      name: template.name,
+      description: template.description,
+      blocks: steps,
+      templateId,
+    });
   };
 
   return (

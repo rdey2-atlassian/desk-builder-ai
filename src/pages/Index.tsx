@@ -6,12 +6,21 @@ import Preview from "@/components/Preview";
 import DeploySuccess from "@/components/DeploySuccess";
 import ScreenShareSimulation from "@/components/ScreenShareSimulation";
 import CanvasComposer from "@/components/composer/CanvasComposer";
+import { BlockInstance } from "@/types/blocks";
 
 type Stage = "landing" | "screen-share" | "canvas" | "composer" | "refine" | "preview" | "deploy";
+
+interface SolutionData {
+  name: string;
+  description: string;
+  blocks: BlockInstance[];
+  templateId: string;
+}
 
 const Index = () => {
   const [stage, setStage] = useState<Stage>("landing");
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const [solutionData, setSolutionData] = useState<SolutionData | null>(null);
 
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplateId(templateId);
@@ -28,11 +37,17 @@ const Index = () => {
     setStage("canvas");
   };
 
-  const handleCanvasComplete = () => {
+  const handleCanvasComplete = (data?: SolutionData) => {
+    if (data) {
+      setSolutionData(data);
+    }
     setStage("refine");
   };
 
-  const handleComposerComplete = () => {
+  const handleComposerComplete = (data?: SolutionData) => {
+    if (data) {
+      setSolutionData(data);
+    }
     setStage("refine");
   };
 
@@ -54,8 +69,8 @@ const Index = () => {
       {stage === "composer" && (
         <Composer templateId={selectedTemplateId} onComplete={handleComposerComplete} />
       )}
-      {stage === "refine" && <Refine onContinue={handleRefineContinue} />}
-      {stage === "preview" && <Preview onDeploy={handleDeploy} />}
+      {stage === "refine" && <Refine solutionData={solutionData} onContinue={handleRefineContinue} />}
+      {stage === "preview" && <Preview solutionData={solutionData} onDeploy={handleDeploy} />}
       {stage === "deploy" && <DeploySuccess />}
     </>
   );

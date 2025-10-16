@@ -13,7 +13,7 @@ import { compileManifest, runPreflight, buildArtifactsZip } from "@/utils/manife
 import { supabase } from "@/integrations/supabase/client";
 
 interface CanvasComposerProps {
-  onComplete: () => void;
+  onComplete: (data?: { name: string; description: string; blocks: BlockInstance[]; templateId: string }) => void;
   templateId: string;
 }
 
@@ -154,8 +154,12 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
   };
 
   const handlePreview = () => {
-    console.log('Previewing solution:', { templateId, blocks });
-    onComplete();
+    onComplete({
+      name: solutionName,
+      description: solutionDescription,
+      blocks,
+      templateId,
+    });
   };
 
   const handleSolutionLoad = (solution: any) => {

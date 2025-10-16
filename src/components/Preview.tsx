@@ -19,14 +19,18 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 interface PreviewProps {
+  solutionData: { name: string; description: string; blocks: any[] } | null;
   onDeploy: () => void;
 }
 
-const Preview = ({ onDeploy }: PreviewProps) => {
+const Preview = ({ solutionData, onDeploy }: PreviewProps) => {
   const [inviteEmails, setInviteEmails] = useState("");
   const [hasInvited, setHasInvited] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const { toast } = useToast();
+  
+  const solutionName = solutionData?.name || "Your Solution";
+  const blockCount = solutionData?.blocks?.length || 0;
 
   const handleLoadSampleData = () => {
     toast({
@@ -72,9 +76,9 @@ const Preview = ({ onDeploy }: PreviewProps) => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Preview Your Helpdesk</h1>
+            <h1 className="text-3xl font-bold">Preview {solutionName}</h1>
             <p className="text-muted-foreground">
-              Test with sample data before deploying
+              {blockCount} blocks configured • Test with sample data before deploying
             </p>
           </div>
           <Button
@@ -84,7 +88,7 @@ const Preview = ({ onDeploy }: PreviewProps) => {
             className="gradient-primary"
           >
             <Rocket className="w-4 h-4 mr-2" />
-            Deploy Helpdesk
+            Deploy Solution
           </Button>
         </div>
 

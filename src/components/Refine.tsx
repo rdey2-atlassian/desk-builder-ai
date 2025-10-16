@@ -11,11 +11,15 @@ import SLAsTab from "./refine/SLAsTab";
 import TeamRolesTab from "./refine/TeamRolesTab";
 
 interface RefineProps {
+  solutionData: { name: string; description: string; blocks: any[] } | null;
   onContinue: () => void;
 }
 
-const Refine = ({ onContinue }: RefineProps) => {
+const Refine = ({ solutionData, onContinue }: RefineProps) => {
   const [activeTab, setActiveTab] = useState("portal");
+  
+  const solutionName = solutionData?.name || "Your Solution";
+  const blockCount = solutionData?.blocks?.length || 0;
 
   return (
     <div className="min-h-screen p-6 bg-background">
@@ -23,9 +27,9 @@ const Refine = ({ onContinue }: RefineProps) => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Refine Your Helpdesk</h1>
+            <h1 className="text-3xl font-bold">Refine {solutionName}</h1>
             <p className="text-muted-foreground">
-              Review and customize before deploying
+              {blockCount} blocks configured • Review and customize before deploying
             </p>
           </div>
           <Button onClick={onContinue} size="lg" className="gradient-primary">
