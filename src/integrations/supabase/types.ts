@@ -14,7 +14,118 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      solution_versions: {
+        Row: {
+          change_summary: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          manifest: Json
+          solution_id: string
+          version: number
+        }
+        Insert: {
+          change_summary?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          manifest: Json
+          solution_id: string
+          version: number
+        }
+        Update: {
+          change_summary?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          manifest?: Json
+          solution_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solution_versions_solution_id_fkey"
+            columns: ["solution_id"]
+            isOneToOne: false
+            referencedRelation: "solutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solutions: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          manifest: Json
+          name: string
+          template_id: string | null
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          manifest: Json
+          name: string
+          template_id?: string | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          manifest?: Json
+          name?: string
+          template_id?: string | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: []
+      }
+      validation_results: {
+        Row: {
+          block_id: string | null
+          created_at: string | null
+          details: Json | null
+          id: string
+          message: string
+          severity: string
+          solution_id: string
+        }
+        Insert: {
+          block_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          message: string
+          severity: string
+          solution_id: string
+        }
+        Update: {
+          block_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          message?: string
+          severity?: string
+          solution_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "validation_results_solution_id_fkey"
+            columns: ["solution_id"]
+            isOneToOne: false
+            referencedRelation: "solutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
