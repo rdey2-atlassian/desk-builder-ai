@@ -23,14 +23,10 @@ const Landing = ({ onTemplateSelect, onScreenShare }: LandingProps) => {
             <span className="text-sm font-medium text-primary">AI Helpdesk Composer</span>
           </div>
           <h1 className="text-5xl font-bold tracking-tight">
-            Build enterprise solutions.
-            <br />
-            <span className="text-primary">
-              Start from a template.
-            </span>
+            Enterprise Service Management
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Choose a pre-built solution or start from scratch. Customize everything.
+            Choose a pre-built solution or start from scratch and customise your own.
           </p>
         </div>
 
