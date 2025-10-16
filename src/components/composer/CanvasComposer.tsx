@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Eye, Save } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Save, Sparkles } from "lucide-react";
 import { BlockInstance } from "@/types/blocks";
 import BlockLibrary from "./BlockLibrary";
 import Canvas from "./Canvas";
 import PropertiesPanel from "./PropertiesPanel";
+import DescribePanel from "./DescribePanel";
 
 interface CanvasComposerProps {
   onComplete: () => void;
@@ -16,6 +17,7 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [libraryCollapsed, setLibraryCollapsed] = useState(false);
   const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
+  const [showDescribePanel, setShowDescribePanel] = useState(false);
 
   const selectedBlock = blocks.find(b => b.id === selectedBlockId) || null;
 
@@ -43,6 +45,14 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
     setBlocks(prev => prev.map(b => b.id === id ? { ...b, parameters } : b));
   };
 
+  const handleBlocksGenerated = (generatedBlocks: BlockInstance[]) => {
+    setBlocks(prev => [...prev, ...generatedBlocks]);
+    // Select the first generated block
+    if (generatedBlocks.length > 0) {
+      setSelectedBlockId(generatedBlocks[0].id);
+    }
+  };
+
   const handleSave = () => {
     console.log("Saving solution manifest:", { templateId, blocks });
     // TODO: Save to manifest
@@ -64,6 +74,14 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowDescribePanel(true)}
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Describe with AI
+          </Button>
           <Button variant="outline" size="sm" onClick={handleSave}>
             <Save className="w-4 h-4 mr-2" />
             Save
@@ -138,6 +156,17 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
           />
         </div>
       </div>
+
+      {/* Describe Panel Overlay */}
+      {showDescribePanel && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowDescribePanel(false)} />
+          <DescribePanel
+            onBlocksGenerated={handleBlocksGenerated}
+            onClose={() => setShowDescribePanel(false)}
+          />
+        </>
+      )}
     </div>
   );
 };
