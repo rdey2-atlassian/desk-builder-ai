@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Eye, Save, Sparkles, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Save, Sparkles, Download, FolderOpen } from "lucide-react";
 import { BlockInstance } from "@/types/blocks";
 import BlockLibrary from "./BlockLibrary";
 import Canvas from "./Canvas";
 import PropertiesPanel from "./PropertiesPanel";
 import DescribePanel from "./DescribePanel";
+import LoadSolutionDialog from "./LoadSolutionDialog";
 import { useToast } from "@/components/ui/use-toast";
 import { compileManifest, runPreflight, buildArtifactsZip } from "@/utils/manifest";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +23,7 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
   const [libraryCollapsed, setLibraryCollapsed] = useState(false);
   const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
   const [showDescribePanel, setShowDescribePanel] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
   const [solutionName, setSolutionName] = useState("Untitled Solution");
   const [solutionDescription, setSolutionDescription] = useState("");
   const [solutionId, setSolutionId] = useState<string | null>(null);
@@ -156,6 +158,14 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
     onComplete();
   };
 
+  const handleSolutionLoad = (solution: any) => {
+    setSolutionName(solution.name);
+    setSolutionDescription(solution.description || "");
+    setSolutionId(solution.id);
+    setVersion(solution.version);
+    setBlocks(solution.manifest.blocks || []);
+  };
+
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Top Bar */}
@@ -170,6 +180,14 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
           <Button 
             variant="outline" 
             size="sm" 
+            onClick={() => setShowLoadDialog(true)}
+          >
+            <FolderOpen className="w-4 h-4 mr-2" />
+            Load
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
             onClick={() => setShowDescribePanel(true)}
           >
             <Sparkles className="w-4 h-4 mr-2" />
@@ -178,6 +196,10 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
           <Button variant="outline" size="sm" onClick={handleSave}>
             <Save className="w-4 h-4 mr-2" />
             Save
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Download className="w-4 h-4 mr-2" />
+            Export
           </Button>
           <Button size="sm" onClick={handlePreview}>
             <Eye className="w-4 h-4 mr-2" />
@@ -260,6 +282,13 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
           />
         </>
       )}
+
+      {/* Load Solution Dialog */}
+      <LoadSolutionDialog
+        open={showLoadDialog}
+        onOpenChange={setShowLoadDialog}
+        onSolutionLoad={handleSolutionLoad}
+      />
     </div>
   );
 };

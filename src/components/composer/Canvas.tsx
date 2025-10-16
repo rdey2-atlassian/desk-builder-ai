@@ -13,6 +13,21 @@ interface CanvasProps {
   onBlockDelete: (id: string) => void;
 }
 
+// Helper to draw curved connection line between two blocks
+const drawConnection = (from: BlockInstance, to: BlockInstance) => {
+  const fromX = from.position.x + 140; // Center of block (280px width / 2)
+  const fromY = from.position.y + 60; // Bottom of block (120px height / 2)
+  const toX = to.position.x + 140;
+  const toY = to.position.y + 60;
+
+  const midY = (fromY + toY) / 2;
+
+  // Create a smooth curved path
+  const path = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
+  
+  return path;
+};
+
 const Canvas = ({
   blocks,
   selectedBlockId,
@@ -79,6 +94,31 @@ const Canvas = ({
       onDrop={handleDrop}
       onClick={handleCanvasClick}
     >
+      {/* Connection Lines SVG Layer */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+        {blocks.map(block => {
+          if (!block.connections || block.connections.length === 0) return null;
+          
+          return block.connections.map(targetId => {
+            const targetBlock = blocks.find(b => b.id === targetId);
+            if (!targetBlock) return null;
+            
+            return (
+              <path
+                key={`${block.id}-${targetId}`}
+                d={drawConnection(block, targetBlock)}
+                stroke="hsl(var(--primary))"
+                strokeWidth="2"
+                fill="none"
+                strokeDasharray="5,5"
+                opacity="0.4"
+                className="transition-all"
+              />
+            );
+          });
+        })}
+      </svg>
+
       {/* Drop zone hint */}
       {blocks.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
