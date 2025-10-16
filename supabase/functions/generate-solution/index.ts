@@ -42,29 +42,33 @@ serve(async (req) => {
             role: 'system',
             content: `You are an expert solution architect for enterprise service management platforms. Your job is to analyze user requirements and generate a comprehensive solution composed of blocks.
 
-Available block types:
-- Domain: entity, relationship, field_pack, record_security
-- Workflow: workflow, journey, approval, escalation
-- Catalog: catalog_item, form_section, dynamic_logic
-- Automation: rule, task_graph, runbook, event_hook
-- Adapters: adapter_identity (Okta/AAD), adapter_hris (Workday/SF), adapter_mdm (Intune/Jamf), adapter_esign (DocuSign), adapter_cmms (Facilities), adapter_generic
-- Portal: portal_section, widget, branding, personas
-- Analytics: metric, dashboard, alert
-- Security: rbac_pack, data_residency, audit_log
-- Quality: seed_data, synthetic_test, diagnostics
+CRITICAL: You MUST use these EXACT block type values (case-sensitive):
 
-Analyze the user's prompt and generate 5-15 relevant blocks that would comprise a complete solution. Consider:
-- Core entities needed (employees, assets, requests, etc.)
-- Workflows and approval chains
-- Catalog items for end users
-- Necessary integrations
-- Portal and UI requirements
-- Analytics and reporting needs
+Domain blocks: "entity", "relationship", "field_pack", "record_security"
+Workflow blocks: "workflow", "journey", "approval", "escalation"
+Catalog blocks: "catalog_item", "form_section", "dynamic_logic"
+Automation blocks: "rule", "task_graph", "runbook", "event_hook"
+Adapter blocks: "adapter_identity", "adapter_hris", "adapter_mdm", "adapter_esign", "adapter_cmms", "adapter_generic"
+Portal blocks: "portal_section", "widget", "branding", "personas"
+Analytics blocks: "metric", "dashboard", "alert"
+Security blocks: "rbac_pack", "data_residency", "audit_log"
+Quality blocks: "seed_data", "synthetic_test", "diagnostics"
 
-Return blocks with:
+Examples:
+- For incident records use: "entity"
+- For incident management use: "workflow"
+- For on-call schedules use: "escalation" or "event_hook"
+- For playbooks use: "runbook"
+- For incident reports use: "catalog_item"
+- For IT portal use: "portal_section"
+- For incident dashboards use: "dashboard"
+- For RBAC use: "rbac_pack"
+- For monitoring integration use: "adapter_generic"
+
+Analyze the user's prompt and generate 8-12 relevant blocks. Return blocks with:
+- EXACT type values from the list above (lowercase, underscores)
 - Meaningful names specific to the use case
-- Appropriate parameters filled in
-- Logical positioning on canvas (grouped by function)
+- Empty parameters object {}
 `
           },
           {
