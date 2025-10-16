@@ -6,13 +6,6 @@ import { X } from "lucide-react";
 import { 
   Check, 
   Loader2, 
-  Globe, 
-  FileText, 
-  Book, 
-  Settings, 
-  Users, 
-  Zap,
-  Shield,
   ChevronRight,
   Edit
 } from "lucide-react";
@@ -32,159 +25,35 @@ import EscalationsTab from "./refine/itops/EscalationsTab";
 import HeartbeatsTab from "./refine/itops/HeartbeatsTab";
 import SyncsTab from "./refine/itops/SyncsTab";
 import ITOpsIntegrationsTab from "./refine/itops/IntegrationsTab";
+import { getTemplateById } from "@/data/templates";
+import { TemplateBlock } from "@/types/templates";
 
 interface ComposerProps {
-  prompt: string;
+  templateId: string;
   onComplete: () => void;
 }
 
-interface BuildStep {
-  id: string;
-  label: string;
-  icon: any;
+interface BuildStep extends TemplateBlock {
   status: "planned" | "linking" | "ready";
-  details?: string[];
 }
 
-const Composer = ({ prompt, onComplete }: ComposerProps) => {
-  // Detect solution type from prompt
-  const isITOps = prompt.toLowerCase().includes("operations") || 
-                  prompt.toLowerCase().includes("incident") ||
-                  prompt.toLowerCase().includes("on-call");
+const Composer = ({ templateId, onComplete }: ComposerProps) => {
+  const template = getTemplateById(templateId);
+  
+  if (!template) {
+    return <div className="p-8 text-center">Template not found</div>;
+  }
 
-  const travelSteps: BuildStep[] = [
-    {
-      id: "portal",
-      label: "Portal & Channels",
-      icon: Globe,
-      status: "planned",
-      details: ["Travel Desk portal scaffolded", "Email intake enabled"],
-    },
-    {
-      id: "request_types",
-      label: "Request Types",
-      icon: FileText,
-      status: "planned",
-      details: ["6 travel-specific types seeded", "Forms + routing configured"],
-    },
-    {
-      id: "knowledge",
-      label: "Knowledge Hub",
-      icon: Book,
-      status: "planned",
-      details: ["10 starter articles created", "Policy snippets attached"],
-    },
-    {
-      id: "integrations",
-      label: "Integrations",
-      icon: Zap,
-      status: "planned",
-      details: [
-        "Okta connected (SSO + approvals)",
-        "Slack connected (#travel-hotline)",
-        "Confluence connected (KB)",
-        "Concur pending",
-        "Email inbound set",
-      ],
-    },
-    {
-      id: "automations",
-      label: "Automations",
-      icon: Settings,
-      status: "planned",
-      details: [
-        "Routing rules configured",
-        "Approval workflows set",
-        "Deadline/risk escalation",
-        "P1 paging enabled",
-      ],
-    },
-    {
-      id: "slas",
-      label: "SLAs",
-      icon: Shield,
-      status: "planned",
-      details: ["P1 Emergency: 5m / 1h", "Standard: 4h / 1d", "Visa: 8h / 5d"],
-    },
-    {
-      id: "teams",
-      label: "Teams & Roles",
-      icon: Users,
-      status: "planned",
-      details: [
-        "'Travel Desk' project created",
-        "Roles: Owner, Agent, Viewer",
-        "VIP group defined",
-      ],
-    },
-  ];
+  const isBlank = template.id === "blank";
+  const isITOps = template.id === "it-operations";
 
-  const itOpsSteps: BuildStep[] = [
-    {
-      id: "roles",
-      label: "Roles & Access",
-      icon: Users,
-      status: "planned",
-      details: ["4 roles defined: Ops Admin, On-call Manager, Responder, Stakeholder", "Least-privilege access configured"],
-    },
-    {
-      id: "playbooks",
-      label: "Incident Playbooks",
-      icon: Book,
-      status: "planned",
-      details: ["P1/P2 incident response playbooks", "Security breach playbook", "Standard actions & runbook links"],
-    },
-    {
-      id: "integrations",
-      label: "Monitoring Integrations",
-      icon: Zap,
-      status: "planned",
-      details: [
-        "Datadog connected (45 alerts)",
-        "PagerDuty synced (3 schedules)",
-        "Slack war rooms configured",
-        "Jira & Statuspage linked",
-      ],
-    },
-    {
-      id: "schedules",
-      label: "On-call Schedules",
-      icon: Globe,
-      status: "planned",
-      details: ["24×7 follow-the-sun coverage", "Secondary escalation rotation", "Security on-call team"],
-    },
-    {
-      id: "escalations",
-      label: "Escalation Policies",
-      icon: Shield,
-      status: "planned",
-      details: [
-        "P1: 5min → 15min → 30min escalation",
-        "P2: 15min → 60min escalation",
-        "Executive notification rules",
-      ],
-    },
-    {
-      id: "heartbeats",
-      label: "Heartbeats & Monitoring",
-      icon: Settings,
-      status: "planned",
-      details: ["8 critical services monitored", "Backup jobs, ETL pipelines", "Silent failure detection"],
-    },
-    {
-      id: "syncs",
-      label: "User & Team Sync",
-      icon: FileText,
-      status: "planned",
-      details: [
-        "Okta SCIM sync enabled (198 users)",
-        "4 team mappings configured",
-        "Calendar & Slack sync active",
-      ],
-    },
-  ];
+  // Convert template blocks to build steps with status
+  const initialSteps: BuildStep[] = template.blocks.map(block => ({
+    ...block,
+    status: "planned" as const,
+  }));
 
-  const [steps, setSteps] = useState<BuildStep[]>(isITOps ? itOpsSteps : travelSteps);
+  const [steps, setSteps] = useState<BuildStep[]>(initialSteps);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -280,12 +149,10 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
             </span>
           </div>
           <h1 className="text-3xl font-bold">
-            {isITOps ? "Building Your IT Operations Desk" : "Building Your Travel Helpdesk"}
+            {template.name}
           </h1>
           <p className="text-muted-foreground">
-            {isITOps 
-              ? "Setting up incident management, on-call schedules, and playbooks" 
-              : "Analyzing prompt and assembling components for Atlassian (500 employees)"}
+            {template.description}
           </p>
         </div>
 
@@ -458,7 +325,7 @@ const Composer = ({ prompt, onComplete }: ComposerProps) => {
           {/* Right: Chat Interface (30%) - Always visible */}
           <div className="lg:sticky lg:top-6 h-[calc(100vh-8rem)]">
             <ChatInterface
-              userPrompt={prompt}
+              userPrompt={template.prompt || ""}
               currentStep={currentStep}
               totalSteps={steps.length}
               steps={steps}

@@ -10,10 +10,10 @@ type Stage = "landing" | "screen-share" | "composer" | "refine" | "preview" | "d
 
 const Index = () => {
   const [stage, setStage] = useState<Stage>("landing");
-  const [prompt, setPrompt] = useState("");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
 
-  const handleGenerate = (userPrompt: string) => {
-    setPrompt(userPrompt);
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplateId(templateId);
     setStage("composer");
   };
 
@@ -22,7 +22,7 @@ const Index = () => {
   };
 
   const handleScreenShareComplete = () => {
-    setPrompt(""); // No prompt from screen share
+    setSelectedTemplateId("blank"); // Start with blank after screen share
     setStage("composer");
   };
 
@@ -40,10 +40,10 @@ const Index = () => {
 
   return (
     <>
-      {stage === "landing" && <Landing onGenerate={handleGenerate} onScreenShare={handleScreenShare} />}
+      {stage === "landing" && <Landing onTemplateSelect={handleTemplateSelect} onScreenShare={handleScreenShare} />}
       {stage === "screen-share" && <ScreenShareSimulation onComplete={handleScreenShareComplete} />}
       {stage === "composer" && (
-        <Composer prompt={prompt} onComplete={handleComposerComplete} />
+        <Composer templateId={selectedTemplateId} onComplete={handleComposerComplete} />
       )}
       {stage === "refine" && <Refine onContinue={handleRefineContinue} />}
       {stage === "preview" && <Preview onDeploy={handleDeploy} />}
