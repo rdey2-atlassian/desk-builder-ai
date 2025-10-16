@@ -151,6 +151,11 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
     }
   };
 
+  const handlePreview = () => {
+    console.log('Previewing solution:', { templateId, blocks });
+    onComplete();
+  };
+
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Top Bar */}
