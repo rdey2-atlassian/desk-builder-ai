@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import { ChevronLeft, ChevronRight, Eye, Save, Sparkles, Download, FolderOpen, Upload, PlayCircle, CheckCircle } from "lucide-react";
 import { BlockInstance } from "@/types/blocks";
 import BlockLibrary from "./BlockLibrary";
@@ -11,6 +12,8 @@ import LoadSolutionDialog from "./LoadSolutionDialog";
 import { PreflightSidebar } from "@/features/composer/PreflightSidebar";
 import { DryRunPanel } from "@/features/composer/DryRunPanel";
 import { DryRunDiffPanel } from "@/features/composer/DryRunDiffPanel";
+import { SeedDataPanel } from "@/features/composer/SeedDataPanel";
+import { SyntheticTestPanel } from "@/features/composer/SyntheticTestPanel";
 import { useToast } from "@/hooks/use-toast";
 import { compileManifest, runPreflight as oldRunPreflight, buildArtifactsZip } from "@/utils/manifest";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,6 +66,8 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
   const [showPreflight, setShowPreflight] = useState(false);
   const [showDryRun, setShowDryRun] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
+  const [showSeedData, setShowSeedData] = useState(false);
+  const [showSynthetic, setShowSynthetic] = useState(false);
   const [solutionId, setSolutionId] = useState<string | null>(null);
   const [version, setVersion] = useState<number>(1);
   const [preflightIssues, setPreflightIssues] = useState<any[]>([]);
@@ -496,6 +501,18 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
             </Button>
           )}
           
+          <Button variant="outline" size="sm" onClick={() => setShowSeedData(true)}>
+            <Download className="w-4 h-4 mr-2" />
+            Seed Data
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={() => setShowSynthetic(true)}>
+            <PlayCircle className="w-4 h-4 mr-2" />
+            Synthetic Test
+          </Button>
+          
+          <Separator orientation="vertical" className="h-8" />
+          
           <Button variant="outline" size="sm" onClick={handleSave}>
             <Save className="w-4 h-4 mr-2" />
             Save
@@ -628,6 +645,26 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
         onOpenChange={setShowLoadDialog}
         onSolutionLoad={handleSolutionLoad}
       />
+      
+      {/* Seed Data Panel */}
+      {showSeedData && manifest && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowSeedData(false)} />
+          <div className="fixed right-4 top-20 bottom-4 w-[600px] z-50">
+            <SeedDataPanel manifest={manifest} />
+          </div>
+        </>
+      )}
+      
+      {/* Synthetic Test Panel */}
+      {showSynthetic && manifest && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowSynthetic(false)} />
+          <div className="fixed right-4 top-20 bottom-4 w-[600px] z-50">
+            <SyntheticTestPanel manifest={manifest} />
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -33,6 +33,7 @@ const taskSchema = z.object({
   adapterId: z.string().optional(),
   action: z.string().optional(),
   parallelGroup: z.string().optional(),
+  description: z.string().optional(),
 });
 
 const securityVisibilitySchema = z.object({

@@ -1,0 +1,129 @@
+{
+  "version": "0.1",
+  "name": "Facilities Work Order Pack",
+  "description": "Facilities management with work order tracking",
+  "blocks": [
+    {
+      "id": "space-entity",
+      "type": "entity",
+      "name": "Space",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "building",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "floor",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "room",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "asset-entity",
+      "type": "entity",
+      "name": "Asset",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "required": true,
+          "enumOptions": ["HVAC", "Plumbing", "Electrical", "Furniture", "Equipment"]
+        },
+        {
+          "name": "serial",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "locationId",
+          "type": "ref",
+          "required": true,
+          "ref": {
+            "entity": "Space"
+          }
+        }
+      ]
+    },
+    {
+      "id": "work-order-workflow",
+      "type": "workflow",
+      "name": "WorkOrder",
+      "states": ["New", "Assigned", "InProgress", "Completed"],
+      "transitions": [
+        { "from": "New", "to": "Assigned", "label": "Assign" },
+        { "from": "Assigned", "to": "InProgress", "label": "Start Work" },
+        { "from": "InProgress", "to": "Completed", "label": "Complete" }
+      ]
+    },
+    {
+      "id": "report-issue-catalog",
+      "type": "catalogItem",
+      "name": "Report Issue",
+      "form": {
+        "sections": [
+          {
+            "title": "Location",
+            "fields": [
+              { "name": "building", "label": "Building", "type": "string", "required": true },
+              { "name": "floor", "label": "Floor", "type": "string", "required": true },
+              { "name": "room", "label": "Room", "type": "string", "required": true }
+            ]
+          },
+          {
+            "title": "Issue Details",
+            "fields": [
+              { "name": "assetType", "label": "Asset Type", "type": "select", "required": true },
+              { "name": "description", "label": "Description", "type": "string", "required": true }
+            ]
+          }
+        ]
+      },
+      "fulfillment": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "hvac-auto-assign-rule",
+      "type": "rule",
+      "name": "Auto-assign HVAC Issues",
+      "when": [
+        { "field": "asset.type", "operator": "equals", "value": "HVAC" }
+      ],
+      "then": [
+        { "type": "assignToQueue", "value": "HVAC-Team" }
+      ]
+    },
+    {
+      "id": "space-security",
+      "type": "security",
+      "name": "Space Security Policy",
+      "visibility": [
+        {
+          "entityName": "Space",
+          "roles": ["FacilitiesTech", "Manager"]
+        },
+        {
+          "entityName": "Asset",
+          "roles": ["FacilitiesTech", "Manager"]
+        }
+      ]
+    }
+  ]
+}

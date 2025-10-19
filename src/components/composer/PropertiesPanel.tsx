@@ -63,6 +63,8 @@ const PropertiesPanel = ({ block, onUpdate }: PropertiesPanelProps) => {
       ? { type: "assignToQueue", value: "" }
       : paramId === "visibility"
       ? { entityName: "", roles: [] }
+      : paramId === "tasks"
+      ? { id: `task-${Date.now()}`, name: "", type: "manual", description: "" }
       : "";
     
     handleParameterChange(paramId, [...current, newItem]);
@@ -597,6 +599,98 @@ const PropertiesPanel = ({ block, onUpdate }: PropertiesPanelProps) => {
     );
   };
 
+  const renderTaskGraphTasks = () => {
+    const tasks = block.parameters.tasks || [];
+    const adapters = []; // Would fetch from manifest in real implementation
+    
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Label>Tasks</Label>
+          <Button size="sm" variant="outline" onClick={() => handleArrayAdd("tasks")}>
+            <Plus className="h-3 w-3 mr-1" />
+            Add Task
+          </Button>
+        </div>
+        
+        <div className="space-y-2">
+          {tasks.map((task: any, idx: number) => (
+            <Card key={idx}>
+              <CardContent className="p-3 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Task name"
+                    value={task.name || ""}
+                    onChange={(e) => handleArrayItemChange("tasks", idx, { ...task, name: e.target.value })}
+                    className="flex-1"
+                  />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleArrayRemove("tasks", idx)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={task.type || "manual"}
+                    onValueChange={(val) => handleArrayItemChange("tasks", idx, { ...task, type: val })}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manual">Manual</SelectItem>
+                      <SelectItem value="adapterAction">Adapter Action</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {task.type === "adapterAction" && (
+                    <Input
+                      placeholder="Adapter ID"
+                      value={task.adapterId || ""}
+                      onChange={(e) => handleArrayItemChange("tasks", idx, { ...task, adapterId: e.target.value })}
+                      className="flex-1"
+                    />
+                  )}
+                </div>
+                
+                {task.type === "adapterAction" && (
+                  <Input
+                    placeholder="Action name"
+                    value={task.action || ""}
+                    onChange={(e) => handleArrayItemChange("tasks", idx, { ...task, action: e.target.value })}
+                  />
+                )}
+                
+                <Input
+                  placeholder="Parallel group (optional)"
+                  value={task.parallelGroup || ""}
+                  onChange={(e) => handleArrayItemChange("tasks", idx, { ...task, parallelGroup: e.target.value })}
+                />
+                
+                <Textarea
+                  placeholder="Description"
+                  value={task.description || ""}
+                  onChange={(e) => handleArrayItemChange("tasks", idx, { ...task, description: e.target.value })}
+                  rows={2}
+                />
+              </CardContent>
+            </Card>
+          ))}
+          
+          {tasks.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No tasks defined. Click &quot;Add Task&quot; to get started.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderSecurityVisibility = () => {
     const visibility = block.parameters.visibility || [];
     
@@ -757,11 +851,13 @@ const PropertiesPanel = ({ block, onUpdate }: PropertiesPanelProps) => {
           {block.type === "workflow" && renderWorkflowStates()}
           {block.type === "catalog_item" && renderCatalogItemForm()}
           {block.type === "rule" && renderRuleConditionsActions()}
+          {block.type === "task_graph" && renderTaskGraphTasks()}
           {block.type === "adapter_generic" && renderAdapterConfig()}
           {(block.type.startsWith("adapter_") || block.type === "rbac_pack") && renderAdapterConfig()}
+          {block.type === "rbac_pack" && renderSecurityVisibility()}
 
           {definition.parameters.length > 0 && 
-           !["entity", "workflow", "catalog_item", "rule"].includes(block.type) && 
+           !["entity", "workflow", "catalog_item", "rule", "task_graph", "rbac_pack"].includes(block.type) && 
            !block.type.startsWith("adapter_") && (
             <>
               <Separator />
@@ -781,7 +877,7 @@ const PropertiesPanel = ({ block, onUpdate }: PropertiesPanelProps) => {
           )}
 
           {definition.parameters.length === 0 && 
-           !["entity", "workflow", "catalog_item", "rule"].includes(block.type) &&
+           !["entity", "workflow", "catalog_item", "rule", "task_graph", "rbac_pack"].includes(block.type) &&
            !block.type.startsWith("adapter_") && (
             <p className="text-sm text-muted-foreground text-center py-8">
               No configurable parameters for this block type

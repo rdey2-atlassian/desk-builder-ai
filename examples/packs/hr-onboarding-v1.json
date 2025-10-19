@@ -1,0 +1,145 @@
+{
+  "version": "0.1",
+  "name": "HR Onboarding Pack v1",
+  "description": "Complete HR onboarding solution with Okta integration",
+  "blocks": [
+    {
+      "id": "employee-entity",
+      "type": "entity",
+      "name": "Employee",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "employeeId",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true,
+          "pii": true
+        },
+        {
+          "name": "country",
+          "type": "enum",
+          "required": true,
+          "enumOptions": ["US", "UK", "DE", "FR", "JP"]
+        },
+        {
+          "name": "department",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "startDate",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "managerId",
+          "type": "ref",
+          "ref": {
+            "entity": "Employee"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hr-onboarding-workflow",
+      "type": "workflow",
+      "name": "HR_Onboarding",
+      "states": ["Draft", "Preboarding", "Day1", "Done"],
+      "transitions": [
+        { "from": "Draft", "to": "Preboarding", "label": "Submit" },
+        { "from": "Preboarding", "to": "Day1", "label": "Start Day 1" },
+        { "from": "Day1", "to": "Done", "label": "Complete" }
+      ]
+    },
+    {
+      "id": "request-laptop-catalog",
+      "type": "catalogItem",
+      "name": "Request Laptop",
+      "form": {
+        "sections": [
+          {
+            "title": "Employee Information",
+            "fields": [
+              { "name": "employeeId", "label": "Employee ID", "type": "string", "required": true },
+              { "name": "email", "label": "Email", "type": "string", "required": true },
+              { "name": "department", "label": "Department", "type": "select", "required": true }
+            ]
+          },
+          {
+            "title": "Equipment Details",
+            "fields": [
+              { "name": "laptopModel", "label": "Laptop Model", "type": "select", "required": true },
+              { "name": "accessories", "label": "Accessories", "type": "string" }
+            ]
+          }
+        ]
+      },
+      "fulfillment": {
+        "type": "taskGraph",
+        "taskGraphId": "day1-setup-tasks"
+      }
+    },
+    {
+      "id": "preboarding-rule",
+      "type": "rule",
+      "name": "Auto-spawn Day1 Setup",
+      "when": [
+        { "field": "status", "operator": "equals", "value": "Preboarding" }
+      ],
+      "then": [
+        { "type": "spawnTaskGraph", "value": "day1-setup-tasks" }
+      ]
+    },
+    {
+      "id": "day1-setup-tasks",
+      "type": "taskGraph",
+      "name": "Day1 Setup",
+      "tasks": [
+        {
+          "id": "task-okta-create",
+          "name": "Create Okta Account",
+          "type": "adapterAction",
+          "adapterId": "okta-adapter",
+          "action": "createUser",
+          "parallelGroup": "initial"
+        },
+        {
+          "id": "task-manual-handover",
+          "name": "IT Handover Meeting",
+          "type": "manual",
+          "description": "Schedule 30min meeting with new hire for equipment handover"
+        }
+      ]
+    },
+    {
+      "id": "employee-security",
+      "type": "security",
+      "name": "Employee Security Policy",
+      "visibility": [
+        {
+          "entityName": "Employee",
+          "roles": ["HRBP", "ITAgent", "Manager"]
+        }
+      ]
+    },
+    {
+      "id": "okta-adapter",
+      "type": "adapter",
+      "name": "Okta Integration",
+      "vendor": "okta",
+      "config": {
+        "baseUrl": "https://your-org.okta.com",
+        "token": ""
+      }
+    }
+  ]
+}

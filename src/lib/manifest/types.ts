@@ -102,6 +102,7 @@ export interface Task {
   adapterId?: string;
   action?: string;
   parallelGroup?: string;
+  description?: string;
 }
 
 export interface SecurityBlock extends BaseBlock {

@@ -125,5 +125,22 @@ export function runPreflight(manifest: SolutionManifest): PreflightIssue[] {
       }
     });
   
+  // Rule 7: Task graph adapter validation
+  const taskGraphs = manifest.blocks.filter((b) => b.type === "taskGraph");
+  const adapterIds = new Set(manifest.blocks.filter((b) => b.type === "adapter").map((b) => b.id));
+  
+  taskGraphs.forEach((graph: any) => {
+    (graph.tasks || []).forEach((task: any, idx: number) => {
+      if (task.type === "adapterAction" && task.adapterId && !adapterIds.has(task.adapterId)) {
+        issues.push({
+          severity: "error",
+          message: `Task graph "${graph.name}" task ${idx + 1} references non-existent adapter "${task.adapterId}"`,
+          blockId: graph.id,
+          field: `tasks[${idx}]`,
+        });
+      }
+    });
+  });
+  
   return issues;
 }
