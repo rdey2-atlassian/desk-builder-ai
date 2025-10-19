@@ -63,7 +63,19 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
   const [dryRunPlan, setDryRunPlan] = useState<DryRunPlan | null>(null);
 
   const blocks = manifest?.blocks || [];
-  const selectedBlock = blocks.find(b => b.id === selectedBlockId) || null;
+  
+  // Convert selected Block to BlockInstance format for PropertiesPanel
+  const selectedBlockRaw = blocks.find(b => b.id === selectedBlockId);
+  const selectedBlock = selectedBlockRaw ? {
+    id: selectedBlockRaw.id,
+    type: selectedBlockRaw.type as any,
+    name: selectedBlockRaw.name,
+    position: { x: 0, y: 0 },
+    parameters: {
+      ...selectedBlockRaw,
+      // Flatten all properties into parameters for backward compatibility
+    },
+  } as BlockInstance : null;
 
   // Initialize with empty manifest if none exists
   useEffect(() => {
@@ -518,10 +530,14 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
             propertiesCollapsed ? "w-0" : "w-80"
           } overflow-hidden border-l`}
         >
-          <PropertiesPanel
-            block={selectedBlock as any}
-            onUpdate={(id, params) => updateBlock(id, params)}
-          />
+        <PropertiesPanel
+          block={selectedBlock}
+          onUpdate={(id, params) => {
+            // Extract direct properties and update the block
+            const { name, ...rest } = params;
+            updateBlock(id, rest);
+          }}
+        />
         </div>
       </div>
 
