@@ -1,0 +1,41 @@
+{
+  "version": "0.1",
+  "name": "HR Onboarding",
+  "description": "Employee onboarding workflow with Okta integration",
+  "blocks": [
+    {
+      "id": "employee-entity",
+      "type": "entity",
+      "name": "Employee",
+      "fields": [
+        {
+          "name": "employeeId",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true,
+          "pii": true
+        },
+        {
+          "name": "country",
+          "type": "enum",
+          "required": true,
+          "enumOptions": ["US", "UK", "DE", "FR"]
+        }
+      ]
+    },
+    {
+      "id": "onboarding-workflow",
+      "type": "workflow",
+      "name": "HR_Onboarding",
+      "states": ["Draft", "InProgress", "Done"],
+      "transitions": [
+        { "from": "Draft", "to": "InProgress", "label": "Start" },
+        { "from": "InProgress", "to": "Done", "label": "Complete" }
+      ]
+    }
+  ]
+}
