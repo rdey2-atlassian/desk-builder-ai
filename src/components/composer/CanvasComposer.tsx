@@ -10,13 +10,16 @@ import DescribePanel from "./DescribePanel";
 import LoadSolutionDialog from "./LoadSolutionDialog";
 import { PreflightSidebar } from "@/features/composer/PreflightSidebar";
 import { DryRunPanel } from "@/features/composer/DryRunPanel";
+import { DryRunDiffPanel } from "@/features/composer/DryRunDiffPanel";
 import { useToast } from "@/hooks/use-toast";
 import { compileManifest, runPreflight as oldRunPreflight, buildArtifactsZip } from "@/utils/manifest";
 import { supabase } from "@/integrations/supabase/client";
 import { useManifestStore } from "@/store/manifestStore";
+import { useDryRunStore } from "@/store/dryRunStore";
 import { loadExample, EXAMPLES, type ExampleId } from "@/lib/examples";
 import { runPreflight } from "@/lib/preflight/preflight";
 import { generateDryRunPlan, type DryRunPlan } from "@/lib/compiler/plan";
+import { generateDiff } from "@/lib/compiler/diff";
 import { validateManifest } from "@/lib/manifest/schema";
 import { Block, SolutionManifest, EntityBlock } from "@/lib/manifest/types";
 import { nanoid } from "nanoid";
@@ -49,6 +52,8 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
     setSelectedBlock,
     markDirty,
   } = useManifestStore();
+  
+  const { previousPlan, currentPlan, setCurrentPlan } = useDryRunStore();
 
   const [libraryCollapsed, setLibraryCollapsed] = useState(false);
   const [propertiesCollapsed, setPropertiesCollapsed] = useState(false);
@@ -57,10 +62,29 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
   const [showLoadExample, setShowLoadExample] = useState(false);
   const [showPreflight, setShowPreflight] = useState(false);
   const [showDryRun, setShowDryRun] = useState(false);
+  const [showDiff, setShowDiff] = useState(false);
   const [solutionId, setSolutionId] = useState<string | null>(null);
   const [version, setVersion] = useState<number>(1);
   const [preflightIssues, setPreflightIssues] = useState<any[]>([]);
   const [dryRunPlan, setDryRunPlan] = useState<DryRunPlan | null>(null);
+  
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        handleExportManifest();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        // Open command palette (can be enhanced later)
+        toast({ title: "Command palette", description: "Coming soon!" });
+      }
+    };
+    
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [manifest]);
 
   const blocks = manifest?.blocks || [];
   
@@ -180,8 +204,17 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
     if (!manifest) return;
     const plan = generateDryRunPlan(manifest);
     setDryRunPlan(plan);
+    setCurrentPlan(plan);
     setShowDryRun(true);
     toast({ title: "Dry run generated", description: "Review the execution plan" });
+  };
+  
+  const handleShowDiff = () => {
+    if (!currentPlan) {
+      toast({ title: "No plan", description: "Run a dry-run first", variant: "destructive" });
+      return;
+    }
+    setShowDiff(true);
   };
 
   const handlePreflightIssueClick = (issue: any) => {
@@ -456,6 +489,13 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
             Dry Run
           </Button>
           
+          {previousPlan && (
+            <Button variant="outline" size="sm" onClick={handleShowDiff}>
+              <Eye className="w-4 h-4 mr-2" />
+              View Diff
+            </Button>
+          )}
+          
           <Button variant="outline" size="sm" onClick={handleSave}>
             <Save className="w-4 h-4 mr-2" />
             Save
@@ -557,6 +597,16 @@ const CanvasComposer = ({ onComplete, templateId }: CanvasComposerProps) => {
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowDryRun(false)} />
           <div className="fixed right-4 top-20 bottom-4 w-[600px] z-50">
             <DryRunPanel plan={dryRunPlan} />
+          </div>
+        </>
+      )}
+      
+      {/* Diff Panel */}
+      {showDiff && previousPlan && currentPlan && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowDiff(false)} />
+          <div className="fixed right-4 top-20 bottom-4 w-[600px] z-50">
+            <DryRunDiffPanel diff={generateDiff(previousPlan, currentPlan)} />
           </div>
         </>
       )}

@@ -63,10 +63,28 @@ const workflowBlockSchema = baseBlockSchema.extend({
   transitions: z.array(workflowTransitionSchema),
 });
 
+const formFieldSchema = z.object({
+  name: z.string(),
+  label: z.string(),
+  type: z.enum(["string", "number", "boolean", "date", "select"]),
+  required: z.boolean().optional(),
+  options: z.array(z.string()).optional(),
+});
+
+const formSectionSchema = z.object({
+  title: z.string(),
+  fields: z.array(formFieldSchema),
+});
+
 const catalogItemBlockSchema = baseBlockSchema.extend({
   type: z.literal("catalogItem"),
-  fulfillmentType: z.enum(["taskGraph", "manual"]),
-  taskGraphId: z.string().optional(),
+  form: z.object({
+    sections: z.array(formSectionSchema),
+  }),
+  fulfillment: z.object({
+    type: z.enum(["taskGraph", "manual"]),
+    taskGraphId: z.string().optional(),
+  }),
 });
 
 const ruleBlockSchema = baseBlockSchema.extend({

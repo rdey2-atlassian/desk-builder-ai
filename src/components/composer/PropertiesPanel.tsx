@@ -55,6 +55,14 @@ const PropertiesPanel = ({ block, onUpdate }: PropertiesPanelProps) => {
       ? "New State"
       : paramId === "transitions"
       ? { from: "", to: "", label: "" }
+      : paramId === "sections"
+      ? { title: "New Section", fields: [] }
+      : paramId === "when"
+      ? { field: "", operator: "equals", value: "" }
+      : paramId === "then"
+      ? { type: "assignToQueue", value: "" }
+      : paramId === "visibility"
+      ? { entityName: "", roles: [] }
       : "";
     
     handleParameterChange(paramId, [...current, newItem]);
@@ -258,6 +266,386 @@ const PropertiesPanel = ({ block, onUpdate }: PropertiesPanelProps) => {
     );
   };
 
+  const renderCatalogItemForm = () => {
+    const form = block.parameters.form || { sections: [] };
+    const sections = form.sections || [];
+    
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Label>Form Sections</Label>
+          <Button size="sm" variant="outline" onClick={() => {
+            const current = block.parameters.form || { sections: [] };
+            handleParameterChange("form", {
+              sections: [...current.sections, { title: "New Section", fields: [] }]
+            });
+          }}>
+            <Plus className="h-3 w-3 mr-1" />
+            Add Section
+          </Button>
+        </div>
+        
+        <div className="space-y-3">
+          {sections.map((section: any, sIdx: number) => (
+            <Card key={sIdx}>
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Section title"
+                    value={section.title || ""}
+                    onChange={(e) => {
+                      const updated = [...sections];
+                      updated[sIdx] = { ...section, title: e.target.value };
+                      handleParameterChange("form", { sections: updated });
+                    }}
+                    className="flex-1"
+                  />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      handleParameterChange("form", {
+                        sections: sections.filter((_: any, i: number) => i !== sIdx)
+                      });
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs">Fields</Label>
+                    <Button size="sm" variant="outline" onClick={() => {
+                      const updated = [...sections];
+                      updated[sIdx] = {
+                        ...section,
+                        fields: [...(section.fields || []), { name: "", label: "", type: "string", required: false }]
+                      };
+                      handleParameterChange("form", { sections: updated });
+                    }}>
+                      <Plus className="h-2 w-2" />
+                    </Button>
+                  </div>
+                  
+                  {(section.fields || []).map((field: any, fIdx: number) => (
+                    <div key={fIdx} className="flex items-center gap-2 text-xs">
+                      <Input
+                        placeholder="Name"
+                        value={field.name || ""}
+                        onChange={(e) => {
+                          const updated = [...sections];
+                          const fields = [...updated[sIdx].fields];
+                          fields[fIdx] = { ...field, name: e.target.value };
+                          updated[sIdx] = { ...updated[sIdx], fields };
+                          handleParameterChange("form", { sections: updated });
+                        }}
+                        className="flex-1"
+                      />
+                      <Select
+                        value={field.type || "string"}
+                        onValueChange={(val) => {
+                          const updated = [...sections];
+                          const fields = [...updated[sIdx].fields];
+                          fields[fIdx] = { ...field, type: val };
+                          updated[sIdx] = { ...updated[sIdx], fields };
+                          handleParameterChange("form", { sections: updated });
+                        }}
+                      >
+                        <SelectTrigger className="w-24">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="string">String</SelectItem>
+                          <SelectItem value="number">Number</SelectItem>
+                          <SelectItem value="boolean">Boolean</SelectItem>
+                          <SelectItem value="date">Date</SelectItem>
+                          <SelectItem value="select">Select</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          const updated = [...sections];
+                          updated[sIdx].fields = updated[sIdx].fields.filter((_: any, i: number) => i !== fIdx);
+                          handleParameterChange("form", { sections: updated });
+                        }}
+                      >
+                        <Trash2 className="h-2 w-2" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        <Separator />
+        
+        <div className="space-y-2">
+          <Label>Fulfillment</Label>
+          <Select
+            value={block.parameters.fulfillment?.type || "manual"}
+            onValueChange={(val) => {
+              handleParameterChange("fulfillment", {
+                ...block.parameters.fulfillment,
+                type: val
+              });
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="manual">Manual</SelectItem>
+              <SelectItem value="taskGraph">Task Graph</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    );
+  };
+
+  const renderRuleConditionsActions = () => {
+    const when = block.parameters.when || [];
+    const then = block.parameters.then || [];
+    
+    return (
+      <div className="space-y-4">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>Conditions (When)</Label>
+            <Button size="sm" variant="outline" onClick={() => handleArrayAdd("when")}>
+              <Plus className="h-3 w-3 mr-1" />
+              Add Condition
+            </Button>
+          </div>
+          
+          <div className="space-y-2">
+            {when.map((condition: any, idx: number) => (
+              <Card key={idx}>
+                <CardContent className="p-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      placeholder="Field"
+                      value={condition.field || ""}
+                      onChange={(e) => handleArrayItemChange("when", idx, { ...condition, field: e.target.value })}
+                      className="flex-1"
+                    />
+                    <Select
+                      value={condition.operator || "equals"}
+                      onValueChange={(val) => handleArrayItemChange("when", idx, { ...condition, operator: val })}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="equals">Equals</SelectItem>
+                        <SelectItem value="notEquals">Not Equals</SelectItem>
+                        <SelectItem value="contains">Contains</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      placeholder="Value"
+                      value={condition.value || ""}
+                      onChange={(e) => handleArrayItemChange("when", idx, { ...condition, value: e.target.value })}
+                      className="flex-1"
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleArrayRemove("when", idx)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+        
+        <Separator />
+        
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>Actions (Then)</Label>
+            <Button size="sm" variant="outline" onClick={() => handleArrayAdd("then")}>
+              <Plus className="h-3 w-3 mr-1" />
+              Add Action
+            </Button>
+          </div>
+          
+          <div className="space-y-2">
+            {then.map((action: any, idx: number) => (
+              <Card key={idx}>
+                <CardContent className="p-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={action.type || "assignToQueue"}
+                      onValueChange={(val) => handleArrayItemChange("then", idx, { ...action, type: val })}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="assignToQueue">Assign to Queue</SelectItem>
+                        <SelectItem value="setSLA">Set SLA</SelectItem>
+                        <SelectItem value="spawnTaskGraph">Spawn Task Graph</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      placeholder="Value"
+                      value={action.value || ""}
+                      onChange={(e) => handleArrayItemChange("then", idx, { ...action, value: e.target.value })}
+                      className="flex-1"
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleArrayRemove("then", idx)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderAdapterConfig = () => {
+    const config = block.parameters.config || {};
+    const vendor = block.parameters.vendor || "custom";
+    
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label>Vendor</Label>
+          <Select
+            value={vendor}
+            onValueChange={(val) => handleParameterChange("vendor", val)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="okta">Okta</SelectItem>
+              <SelectItem value="workday">Workday</SelectItem>
+              <SelectItem value="intune">Intune</SelectItem>
+              <SelectItem value="docusign">DocuSign</SelectItem>
+              <SelectItem value="custom">Custom</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <Separator />
+        
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>Configuration</Label>
+            <Button size="sm" variant="outline" onClick={() => {
+              const key = prompt("Enter config key:");
+              if (key) {
+                handleParameterChange("config", { ...config, [key]: "" });
+              }
+            }}>
+              <Plus className="h-3 w-3 mr-1" />
+              Add Key
+            </Button>
+          </div>
+          
+          <div className="space-y-2">
+            {Object.entries(config).map(([key, value]) => (
+              <div key={key} className="flex items-center gap-2">
+                <Input
+                  value={key}
+                  disabled
+                  className="w-32"
+                />
+                <Input
+                  type={key.toLowerCase().includes("secret") || key.toLowerCase().includes("password") ? "password" : "text"}
+                  placeholder="Value"
+                  value={value as string}
+                  onChange={(e) => {
+                    handleParameterChange("config", { ...config, [key]: e.target.value });
+                  }}
+                  className="flex-1"
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    const { [key]: _, ...rest } = config;
+                    handleParameterChange("config", rest);
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderSecurityVisibility = () => {
+    const visibility = block.parameters.visibility || [];
+    
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Label>Entity Visibility Rules</Label>
+          <Button size="sm" variant="outline" onClick={() => handleArrayAdd("visibility")}>
+            <Plus className="h-3 w-3 mr-1" />
+            Add Rule
+          </Button>
+        </div>
+        
+        <div className="space-y-2">
+          {visibility.map((rule: any, idx: number) => (
+            <Card key={idx}>
+              <CardContent className="p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Entity name"
+                    value={rule.entityName || ""}
+                    onChange={(e) => handleArrayItemChange("visibility", idx, { ...rule, entityName: e.target.value })}
+                    className="flex-1"
+                  />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleArrayRemove("visibility", idx)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                <Textarea
+                  placeholder="Roles (comma-separated)"
+                  value={(rule.roles || []).join(", ")}
+                  onChange={(e) => {
+                    const roles = e.target.value.split(",").map((r: string) => r.trim()).filter(Boolean);
+                    handleArrayItemChange("visibility", idx, { ...rule, roles });
+                  }}
+                  rows={2}
+                />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const renderParameter = (param: BlockParameter) => {
     const value = block.parameters[param.id];
 
@@ -367,8 +755,14 @@ const PropertiesPanel = ({ block, onUpdate }: PropertiesPanelProps) => {
 
           {block.type === "entity" && renderEntityFields()}
           {block.type === "workflow" && renderWorkflowStates()}
+          {block.type === "catalog_item" && renderCatalogItemForm()}
+          {block.type === "rule" && renderRuleConditionsActions()}
+          {block.type === "adapter_generic" && renderAdapterConfig()}
+          {(block.type.startsWith("adapter_") || block.type === "rbac_pack") && renderAdapterConfig()}
 
-          {definition.parameters.length > 0 && block.type !== "entity" && block.type !== "workflow" && (
+          {definition.parameters.length > 0 && 
+           !["entity", "workflow", "catalog_item", "rule"].includes(block.type) && 
+           !block.type.startsWith("adapter_") && (
             <>
               <Separator />
               {definition.parameters.map((param) => (
@@ -386,7 +780,9 @@ const PropertiesPanel = ({ block, onUpdate }: PropertiesPanelProps) => {
             </>
           )}
 
-          {definition.parameters.length === 0 && block.type !== "entity" && block.type !== "workflow" && (
+          {definition.parameters.length === 0 && 
+           !["entity", "workflow", "catalog_item", "rule"].includes(block.type) &&
+           !block.type.startsWith("adapter_") && (
             <p className="text-sm text-muted-foreground text-center py-8">
               No configurable parameters for this block type
             </p>

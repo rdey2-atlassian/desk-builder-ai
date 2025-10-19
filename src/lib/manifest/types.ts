@@ -44,8 +44,26 @@ export interface WorkflowTransition {
 
 export interface CatalogItemBlock extends BaseBlock {
   type: "catalogItem";
-  fulfillmentType: "taskGraph" | "manual";
-  taskGraphId?: string;
+  form: {
+    sections: FormSection[];
+  };
+  fulfillment: {
+    type: "taskGraph" | "manual";
+    taskGraphId?: string;
+  };
+}
+
+export interface FormSection {
+  title: string;
+  fields: FormField[];
+}
+
+export interface FormField {
+  name: string;
+  label: string;
+  type: "string" | "number" | "boolean" | "date" | "select";
+  required?: boolean;
+  options?: string[];
 }
 
 export interface RuleBlock extends BaseBlock {
@@ -69,6 +87,7 @@ export interface AdapterBlock extends BaseBlock {
   type: "adapter";
   vendor: "okta" | "workday" | "intune" | "docusign" | "custom";
   config: Record<string, string>;
+  requiredConfigKeys?: string[];
 }
 
 export interface TaskGraphBlock extends BaseBlock {

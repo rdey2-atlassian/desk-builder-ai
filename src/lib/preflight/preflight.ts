@@ -1,4 +1,5 @@
-import { SolutionManifest, Block, WorkflowBlock, EntityBlock, RuleBlock } from "@/lib/manifest/types";
+import { SolutionManifest, Block, WorkflowBlock, EntityBlock, RuleBlock, AdapterBlock } from "@/lib/manifest/types";
+import { validateAdapterConfig } from "./adapterValidation";
 
 export interface PreflightIssue {
   severity: "error" | "warning" | "info";
@@ -83,6 +84,46 @@ export function runPreflight(manifest: SolutionManifest): PreflightIssue[] {
       });
     }
   });
+  
+  // Rule 5: Adapter config validation
+  manifest.blocks
+    .filter((b): b is AdapterBlock => b.type === "adapter")
+    .forEach((block) => {
+      const missingKeys = validateAdapterConfig(block.vendor, block.config || {});
+      
+      if (missingKeys.length > 0) {
+        issues.push({
+          severity: "warning",
+          message: `Adapter "${block.name}" (${block.vendor}) is missing required config keys: ${missingKeys.join(", ")}`,
+          blockId: block.id,
+          field: "config",
+        });
+      }
+    });
+  
+  // Rule 6: Workflow state name uniqueness
+  manifest.blocks
+    .filter((b): b is WorkflowBlock => b.type === "workflow")
+    .forEach((block) => {
+      const stateNames = new Set<string>();
+      const duplicates = new Set<string>();
+      
+      block.states.forEach((state) => {
+        if (stateNames.has(state)) {
+          duplicates.add(state);
+        }
+        stateNames.add(state);
+      });
+      
+      if (duplicates.size > 0) {
+        issues.push({
+          severity: "error",
+          message: `Workflow "${block.name}" has duplicate state names: ${Array.from(duplicates).join(", ")}`,
+          blockId: block.id,
+          field: "states",
+        });
+      }
+    });
   
   return issues;
 }
